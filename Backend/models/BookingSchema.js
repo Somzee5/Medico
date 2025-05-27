@@ -12,7 +12,16 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    ticketPrice: { type: String, required: true },
+    ticketPrice: { type: Number, required: true },
+    appointmentStartTime: { // This will store the exact Date/Time of the meeting
+      type: Date,
+      required: true,
+  },
+  // --- NEW FIELD FOR SCHEDULING REMINDERS ---
+  reminderSent: { // To track if reminder has been sent for this booking
+      type: Boolean,
+      default: false,
+  },
     timeSlot: {
       type: {
         day: { type: String, required: true }, // E.g., "tuesday"

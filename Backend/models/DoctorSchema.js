@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+
+const timeSlotSchema = new mongoose.Schema({
+  day: { type: String, required: true },
+  startingTime: { type: String, required: true },
+  endingTime: { type: String, required: true },
+  // Mongoose automatically adds an _id to subdocuments defined this way
+});
+
+
+
 const DoctorSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -21,7 +31,10 @@ const DoctorSchema = new mongoose.Schema({
   },
   bio: { type: String, maxLength: 50 },
   about: { type: String },
-  timeSlots: { type: Array },
+
+  timeSlots: [timeSlotSchema],
+  
+  
   reviews: [{ type: mongoose.Types.ObjectId, ref: "Review" }],
   averageRating: {
     type: Number,

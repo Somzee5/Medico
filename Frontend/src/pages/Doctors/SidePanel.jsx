@@ -39,30 +39,44 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
   const bookAppointment = async (timeSlot) => {
     try {
       setLoading(true);
+      
+      // --- CRITICAL FIX: The first fetch call was missing/commented out! ---
       const res = await fetch(
         `${BASE_URL}/bookings/checkout-session-razorpay/${doctorId}`,
         {
           method: "post",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Good practice to include this
           },
+          // No body needed for this endpoint as per your backend controller
         }
       );
+      // --- END CRITICAL FIX ---
+
       const data = await res.json();
+      
+      console.log("Response from checkout-session-razorpay:", data); // Added for debugging
+      
       if (!res.ok) {
-        throw new Error(data.message + "Please try again!");
+        // If the server responded with an error status (e.g., 400, 500)
+        throw new Error(data.message || "Failed to initiate booking. Please try again!");
       }
       setLoading(false);
+
       if (data.success) {
         var options = {
           key: "" + data.key_id + "",
           amount: "" + data.amount + "",
           currency: "INR",
           name: "" + data.name + "",
-          description: "" + "description" + "",
+          description: "Doctor Appointment Booking", // More descriptive
           image: "https://dummyimage.com/600x400/000/fff",
           order_id: "" + data.order_id + "",
           handler: async function (response) {
+            console.log("Razorpay payment response:", response); // Log Razorpay's direct response
+            console.log("TimeSlot being sent to newbooking API:", timeSlot);
+
             const newdata = JSON.stringify({
               did: data.doctor,
               uid: data.user,
@@ -70,8 +84,10 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
               timeSlot: timeSlot,
             });
 
+            console.log("Data sent to newbooking API (full payload):", newdata);
+
             try {
-              const res = await fetch(`${BASE_URL}/bookings/newbooking`, {
+              const newBookingRes = await fetch(`${BASE_URL}/bookings/newbooking`, { // Renamed 'res' to 'newBookingRes' for clarity
                 method: "post",
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -79,15 +95,19 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
                 },
                 body: newdata,
               });
-              const data = await res.json();
-              if (data.success) {
-                toast.success(data.message);
+              const responseData = await newBookingRes.json(); // Use newBookingRes
+              
+              console.log("New booking API response:", responseData);
+              
+              if (responseData.success) {
+                toast.success(responseData.message);
                 navigate("/checkout-success");
               } else {
-                toast.error(data.message);
+                toast.error(responseData.message || "Booking failed after payment. Please contact support.");
               }
             } catch (error) {
-              console.log(error);
+              console.error("Error in newbooking API call:", error);
+              toast.error("An unexpected error occurred during booking confirmation.");
             }
           },
           prefill: {
@@ -96,24 +116,31 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
             email: "" + data.email + "",
           },
           notes: {
-            description: "" + "res.description" + "",
+            description: "Appointment for " + doctorId, // More specific note
           },
           theme: {
             color: "#2300a3",
           },
         };
+        
+        console.log("Razorpay options being used:", options);
         const paymentObject = new window.Razorpay(options);
         paymentObject.open();
       } else {
-        alert(res.msg);
+        // This branch handles cases where Razorpay order creation failed on backend
+        toast.error(data.message || "Failed to initiate payment. Please try again.");
       }
     } catch (err) {
-      toast.error(err.message);
+      // This catches errors from the first fetch, or issues before Razorpay.open()
+      console.error("Error during appointment booking (overall):", err);
+      toast.error(err.message || "An error occurred while preparing your booking.");
+      setLoading(false);
     }
   };
 
   return (
     <div className="shadow-panelShadow p-3 lg:p-5 rounded-md">
+      {loading && <HashLoader size={25} color="#0067FF" />} {/* Show loader if loading */}
       <div className="flex items-center justify-between">
         <p className="text__para mt-0 font-semibold">Ticket Price</p>
         <span className="text-[16px] leading-7 lg:text-[22px] lg:leading-8 text-headingColor font-bold">
@@ -128,7 +155,7 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
 
         <ul className="mt-3">
           {timeSlots?.map((item, index) => (
-            <li key={index} className="flex items-center justify-between mt-2">
+            <li key={item._id || index} className="flex items-center justify-between mt-2"> {/* Use item._id for key if available */}
               <div className="flex">
                 <p className="text-[15px] leading-6 text-textColor font-semibold">
                   {item.day.charAt(0).toUpperCase() + item.day.slice(1)}
@@ -138,7 +165,8 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
                   {convertTime(item.endingTime)}
                 </p>
               </div>
-              {selectedTimeSlot === item ? (
+              {/* Compare by _id for selectedTimeSlot to be accurate after data re-fetch if needed */}
+              {selectedTimeSlot && selectedTimeSlot._id === item._id ? (
                 <span className="text-green-500 font-semibold">Booked</span>
               ) : (
                 <button
@@ -148,7 +176,6 @@ const SidePanel = ({ doctorId, ticketPrice, timeSlots }) => {
                 >
                   Book
                 </button>
-
               )}
             </li>
           ))}

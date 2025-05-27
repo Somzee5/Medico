@@ -41,10 +41,10 @@ const Tabs = ({ tab, setTab }) => {
               ? "bg-indigo-100 text-primaryColor"
               : "bg-transparent text-headingColor"
           } w-full btn mt-0 rounded-md shadow-sm`}
-          disabled={data && (data.isApproved === 'cancelled' || data.isApproved === 'pending')}
+          // disabled={data && (data.isApproved === 'cancelled' || data.isApproved === 'pending')}
         >
           {data && (data.isApproved === 'cancelled' || data.isApproved === 'pending') ? 
-            <p className="cursor-not-allowed">Appointments</p> : 
+            <p className="">Appointments</p> : 
             <p>Appointments</p>}
         </button>
         <button

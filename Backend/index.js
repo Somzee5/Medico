@@ -8,8 +8,10 @@ import userRoute from './Routes/user.js'
 import doctorRoute from './Routes/doctor.js'
 import reviewRoute from './Routes/review.js'
 import bookingRoute from './Routes/booking.js';
-import adminRoute from './Routes/admin.js'
-import ambulanceRoute from './Routes/ambulance.js'
+import adminRoute from './Routes/admin.js';
+import ambulanceRoute from './Routes/ambulance.js';
+import documentRoute from './Routes/document.js';
+
 dotenv.config();
 
 const app = express();
@@ -51,6 +53,7 @@ app.use('/api/v1/reviews', reviewRoute);
 app.use("/api/v1/bookings", bookingRoute);
 app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/ambulances", ambulanceRoute);
+app.use("/api/v1/documents", documentRoute);
 
 app.listen(PORT, () => {
     connectDB();
