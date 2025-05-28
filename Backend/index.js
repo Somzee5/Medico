@@ -11,6 +11,7 @@ import bookingRoute from './Routes/booking.js';
 import adminRoute from './Routes/admin.js';
 import ambulanceRoute from './Routes/ambulance.js';
 import documentRoute from './Routes/document.js';
+import './utils/scheduler.js'; // Import the scheduler
 
 dotenv.config();
 

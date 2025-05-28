@@ -3,6 +3,7 @@ import Booking from "../models/BookingSchema.js";
 import Doctor from "../models/DoctorSchema.js";
 import AmbulanceBooking from "../models/AmbulanceBookingSchema.js";
 import Ambulance from "../models/AmbulanceSchema.js"
+import appointmentScheduler from '../utils/appointmentScheduler.js';
 
 export const updateUser = async (req, res) => {
   const id = req.params.id;
@@ -140,29 +141,34 @@ export const cancelBooking = async (req, res) => {
   const bookingId = req.params.id;
 
   try {
+    // Find the booking
     const booking = await Booking.findById(bookingId);
     if (!booking) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Booking not found" });
+      return res.status(404).json({ success: false, message: "Booking not found" });
     }
 
-    // console.log(booking.doctor._id)
-    // console.log(booking.timeSlot)
-    const result = await Doctor.findByIdAndUpdate(booking.doctor._id, {
-      $push: { timeSlots: booking.timeSlot },
-    });
-    // console.log(result)
-    await Booking.findByIdAndDelete(bookingId);
+    // Cancel the scheduled reminders
+    appointmentScheduler.cancelAppointment(bookingId);
 
-    res
-      .status(200)
-      .json({ success: true, message: "Booking canceled successfully." });
+    // Update the booking status
+    booking.status = "cancelled";
+    await booking.save();
+
+    // Add the time slot back to the doctor's available slots
+    await Doctor.findByIdAndUpdate(booking.doctor, {
+      $push: {
+        timeSlots: {
+          day: booking.timeSlot.day,
+          startingTime: booking.timeSlot.startingTime,
+          endingTime: booking.timeSlot.endingTime,
+        }
+      }
+    });
+
+    res.status(200).json({ success: true, message: "Booking cancelled successfully" });
   } catch (error) {
-    console.error("Error canceling booking:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "An error occurred while canceling." });
+    console.error("Error cancelling booking:", error);
+    res.status(500).json({ success: false, message: "Failed to cancel booking" });
   }
 };
 

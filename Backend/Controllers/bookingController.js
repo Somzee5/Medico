@@ -6,6 +6,7 @@ import url from "url";
 import axios from "axios";
 import qs from 'qs';
 import moment from 'moment-timezone'; // <--- Make sure this is imported
+import appointmentScheduler from '../utils/appointmentScheduler.js';
 
 // You DO NOT need to import sendAppointmentReminderEmail here.
 // That function is used by the cron job in server.js, not directly by newBooking.
@@ -175,86 +176,100 @@ const zoomMeet = async (did, timeSlot) => { // timeSlot is now passed as an argu
 
 
 export const newBooking = async (req, res) => {
-  const { did, uid, price, timeSlot } = req.body;
-  
-  // Validate incoming timeSlot structure
-  if (!timeSlot || !timeSlot.day || !timeSlot.startingTime || !timeSlot.endingTime || !timeSlot._id) {
-      return res.status(400).json({ success: false, message: "Invalid time slot data provided (missing day, startingTime, endingTime, or _id)." });
-  }
+  const { did, uid, price, timeSlot } = req.body;
+  
+  // Validate incoming timeSlot structure
+  if (!timeSlot || !timeSlot.day || !timeSlot.startingTime || !timeSlot.endingTime || !timeSlot._id) {
+    return res.status(400).json({ success: false, message: "Invalid time slot data provided (missing day, startingTime, endingTime, or _id)." });
+  }
 
-  try {
-    // 1. Check if the specific day and time slot is already booked based on its content (day, start, end)
-    const isAlreadyBooked = await Booking.findOne({
-      doctor: did,
-      "timeSlot.day": timeSlot.day,
-      "timeSlot.startingTime": timeSlot.startingTime,
-      "timeSlot.endingTime": timeSlot.endingTime,
-      // Optional: Add a check for status to only count pending/approved bookings
-      // status: { $in: ["pending", "approved"] }
-    });
+  try {
+    // 1. Check if the specific day and time slot is already booked
+    const isAlreadyBooked = await Booking.findOne({
+      doctor: did,
+      "timeSlot.day": timeSlot.day,
+      "timeSlot.startingTime": timeSlot.startingTime,
+      "timeSlot.endingTime": timeSlot.endingTime,
+    });
 
-    if (isAlreadyBooked) {
-      return res.status(400).json({ success: false, message: "Time slot is already booked for this doctor." });
-    }
+    if (isAlreadyBooked) {
+      return res.status(400).json({ success: false, message: "Time slot is already booked for this doctor." });
+    }
 
-    // 2. Create Zoom meeting (ensure this is robust)
-    // <--- MODIFIED: Declare appointmentStartTime here
-    let start_url, join_url, appointmentStartTime; 
-    try {
-        // Pass timeSlot to zoomMeet for dynamic time calculation
-        // <--- MODIFIED: Destructure appointmentStartTime from zoomMeet result
-        ({ start_url, join_url, appointmentStartTime } = await zoomMeet(did, timeSlot));
-    } catch (zoomError) {
-        console.error("Error creating Zoom meeting:", zoomError);
-        return res.status(500).json({ success: false, message: "Failed to create meeting link. Booking failed." });
-    }
+    // 2. Create Zoom meeting
+    let start_url, join_url, appointmentStartTime;
+    try {
+      ({ start_url, join_url, appointmentStartTime } = await zoomMeet(did, timeSlot));
+    } catch (zoomError) {
+      console.error("Error creating Zoom meeting:", zoomError);
+      return res.status(500).json({ success: false, message: "Failed to create meeting link. Booking failed." });
+    }
 
-    // 3. Create the new booking document
-    const booking = new Booking({
-      doctor: did,
-      user: uid,
-      ticketPrice: price,
-      timeSlot: { // Explicitly create the object to match schema, excluding _id from saving in Booking
-          day: timeSlot.day,
-          startingTime: timeSlot.startingTime,
-          endingTime: timeSlot.endingTime,
-      },
-      appointmentStartTime: appointmentStartTime, // <--- ADDED: Save the calculated time
-      start_url,
-      join_url,
-      status: "approved", // Assuming payment success, set to approved
-      isPaid: true,       // Assuming payment success
-      reminderSent: false, // <--- ADDED: Initialize as false
-    });
+    // 3. Get user and doctor details for the scheduler
+    const [user, doctor] = await Promise.all([
+      User.findById(uid).select('name email'),
+      Doctor.findById(did).select('name email')
+    ]);
 
-    await booking.save();
-    console.log("Booking saved successfully.");
+    if (!user || !doctor) {
+      return res.status(404).json({ success: false, message: "User or doctor not found." });
+    }
 
-    // 4. Remove booked time slot from the doctor's available timeSlots
-    // Use _id to accurately pull the specific subdocument
-    await Doctor.findByIdAndUpdate(did, {
-      $pull: {
-        timeSlots: {
-          _id: timeSlot._id, // <=== CRITICAL FIX: Match by _id
-          // You can keep day, startingTime, endingTime here as secondary checks,
-          // but _id is the primary identifier for subdocuments.
-          day: timeSlot.day,
-          startingTime: timeSlot.startingTime,
-          endingTime: timeSlot.endingTime,
-        }
-      }
-    }, { new: true }); // { new: true } returns the updated Doctor document
-    console.log(`Time slot ${timeSlot._id} pulled from doctor ${did}`);
+    // 4. Create the new booking document
+    const booking = new Booking({
+      doctor: did,
+      user: uid,
+      ticketPrice: price,
+      timeSlot: {
+        day: timeSlot.day,
+        startingTime: timeSlot.startingTime,
+        endingTime: timeSlot.endingTime,
+      },
+      appointmentStartTime: appointmentStartTime,
+      start_url,
+      join_url,
+      status: "approved",
+      isPaid: true,
+      reminderSent: false,
+    });
 
-    res.status(200).json({ success: true, message: "Booking Done Successfully!" });
-  } catch (error) {
-    console.error("Error in newBooking:", error); // Log the actual error for debugging
-    // Distinguish between validation errors (400) and internal server errors (500)
-    if (error.name === 'ValidationError') {
-        return res.status(400).json({ success: false, message: error.message });
-    }
-    res.status(500).json({ success: false, message: "Internal server error. Please try again." });
-  }
+    await booking.save();
+    console.log("Booking saved successfully.");
+
+    // 5. Schedule appointment reminders
+    appointmentScheduler.scheduleAppointment({
+      id: booking._id,
+      startTime: appointmentStartTime,
+      patient: {
+        name: user.name,
+        email: user.email
+      },
+      doctor: {
+        name: doctor.name,
+        email: doctor.email
+      },
+      zoomJoinUrl: join_url,
+      zoomStartUrl: start_url
+    });
+
+    // 6. Remove booked time slot from the doctor's available timeSlots
+    await Doctor.findByIdAndUpdate(did, {
+      $pull: {
+        timeSlots: {
+          _id: timeSlot._id,
+          day: timeSlot.day,
+          startingTime: timeSlot.startingTime,
+          endingTime: timeSlot.endingTime,
+        }
+      }
+    }, { new: true });
+    console.log(`Time slot ${timeSlot._id} pulled from doctor ${did}`);
+
+    res.status(200).json({ success: true, message: "Booking Done Successfully!" });
+  } catch (error) {
+    console.error("Error in newBooking:", error);
+    res.status(500).json({ success: false, message: "Failed to create booking. Please try again." });
+  }
 };
 
 

@@ -3,7 +3,7 @@ import Header from "../components/Header/Header";
 import Footer from '../components/Footer/Footer';
 import Routers from '../../routes/Routers';
 import { authContext } from '../context/AuthContext';
-
+import Chatbot from '../components/Chatbot';
 
 const Layout = () => {
   const { role } = useContext(authContext);
@@ -13,6 +13,7 @@ const Layout = () => {
     <Routers />
    </main>
    {role !== 'admin' && <Footer />}
+   <Chatbot />
   </>
 }
 
