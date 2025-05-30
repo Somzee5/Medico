@@ -1,0 +1,7 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore files containing sensitive data
+Flask/keys.py
+.env

@@ -1,10 +1,12 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from twilio.rest import Client
 import threading
 import schedule
 import time
-import keys
 import os
 import re
 from pdf2image import convert_from_path
@@ -81,12 +83,17 @@ def send_message():
     message_body = f"\n{medicine_lines_str}\n\n{'Note from the doctor:' if note else ''}{note}"
         
 
-    client = Client(keys.account_sid, keys.auth_token)
+    twilio_account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+    twilio_auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+    twilio_number = os.environ.get('TWILIO_NUMBER') # Recommend moving this to env var too
+    target_number = os.environ.get('TARGET_NUMBER') # Recommend moving this to env var too
+
+    client = Client(twilio_account_sid, twilio_auth_token)
 
     message = client.messages.create(
         body=message_body,
-        from_=keys.twilio_number,
-        to=keys.target_number
+        from_=twilio_number,
+        to=target_number
     )
 
     print(message.body)
