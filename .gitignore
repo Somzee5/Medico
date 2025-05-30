@@ -1,7 +1,75 @@
-# Ignore compiled Python files
+# -----------------------------------------------------------
+# MediEase Project .gitignore
+# This file specifies intentionally untracked files to ignore
+# when using Git.
+# -----------------------------------------------------------
+
+# Compiled Python files (bytecode)
 __pycache__/
 *.pyc
+*.pyd
+*.pyo
 
-# Ignore files containing sensitive data
-Flask/keys.py
+# Virtual Environment
+# You should always ignore your virtual environment directory.
+# Common names include 'env', 'venv', '.env' (if it's the env itself, not the secrets file)
+# In your case, you have a .env for secrets, so venv/env is the typical virtual environment name.
+venv/
+env/
+.venv/
+
+# Dependencies
+# Pip-installed packages
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Operating System Files
+.DS_Store # macOS
+Thumbs.db # Windows
+ehthumbs.db # Windows
+.directory # Linux
+Desktop.ini # Windows
+
+# IDE and Editor Files
+# VS Code
+.vscode/
+# PyCharm / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sensitive Data / Configuration (CONFIRMED CRITICAL FOR YOUR PROJECT)
+# Your local environment variables with actual secrets
 .env
+
+# The Python file that used to contain hardcoded secrets
+# This file is now empty/modified to use environment variables,
+# and we don't want it accidentally tracked if recreated.
+Flask/keys.py
+
+# Logs
+*.log
+logs/
+
+# Database files
+# If you are using SQLite, typically a .sqlite or .db file
+*.db
+*.sqlite3
+
+# Test / Coverage files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Miscellaneous
+*.pid # pid files
+*.seed # pip seed files
+*.pyc.d # compiled python files (dependencies)
+.envrc # direnv file (if used)
+
+# Uploads directory (containing user-uploaded files, generated images)
+# We usually don't want these in version control.
+uploads/
