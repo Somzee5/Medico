@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from ml_utils import extract_input, extract_language
 import pandas as pd
 import joblib
 import traceback
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # Load multilingual model and response dictionary
 model = joblib.load("chatbot_multilingual_model.joblib")
@@ -36,4 +38,4 @@ def predict():
         return jsonify({"response": "Sorry, an error occurred during processing."}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(debug=True, port=5001)
