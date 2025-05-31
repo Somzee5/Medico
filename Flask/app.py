@@ -1,52 +1,46 @@
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv() # Ensure this is at the very top to load .env variables first
 
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from twilio.rest import Client
-import threading
-import schedule
-import time
-import os
+import os # Make sure os is imported for environment variables
 import re
 from pdf2image import convert_from_path
 import google.generativeai as genai
 import pathlib
-import textwrap
+import textwrap # Still here for safety, though to_markdown was removed
 
-from IPython.display import display
-from IPython.display import Markdown
-
-def to_markdown(text):
-  text = text.replace('•', '  *')
-  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
-# import genai
 app = Flask(__name__)
-CORS(app)
+CORS(app) # Allows cross-origin requests
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'pdf'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-GOOGLE_API_KEY='AIzaSyAGYpKQG9RrBrUZpP1Evy3WwnC3oScyp14'
+# Load Google API Key from environment variables
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
 
-data2 = ""
+data2 = "" # Global variable, consider passing as argument if possible for better practice
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def send_report():
-    global data2 
-    os.system(f"tesseract {os.path.join(app.config['UPLOAD_FOLDER'], 'page_1.png')} tesseract-report")  
+    global data2
+    # Ensure tesseract is installed in the environment for this to work
+    os.system(f"tesseract {os.path.join(app.config['UPLOAD_FOLDER'], 'page_1.png')} tesseract-report")
     with open('tesseract-report.txt', 'r') as file:
         data = file.read()
-    data2 = data 
+    data2 = data
 
 def convert_pdf_to_png(pdf_file):
-    images = convert_from_path(pdf_file,poppler_path=r"C:\Program Files\poppler-23.11.0\Library\bin")
+    # Removed poppler_path as it's Windows-specific. Render will have poppler-utils installed globally.
+    images = convert_from_path(pdf_file)
     png_files = []
     for i, image in enumerate(images):
         png_file = os.path.join(app.config['UPLOAD_FOLDER'], f'page_{i}.png')
@@ -55,21 +49,21 @@ def convert_pdf_to_png(pdf_file):
     return png_files
 
 def convert_pdf_to_png_report(pdf_file):
-    images = convert_from_path(pdf_file,poppler_path=r"C:\Program Files\poppler-23.11.0\Library\bin")
+    # Removed poppler_path as it's Windows-specific. Render will have poppler-utils installed globally.
+    images = convert_from_path(pdf_file)
     png_files = []
     for i, image in enumerate(images):
-        png_file = os.path.join(app.config['UPLOAD_FOLDER'], f'page_1.png')
+        png_file = os.path.join(app.config['UPLOAD_FOLDER'], f'page_1.png') # Overwrites previous page, check logic if multiple pages are needed
         image.save(png_file, 'PNG')
         png_files.append(png_file)
-        
-    return png_files
 
+    return png_files
 
 def send_message():
     os.system(f"tesseract {os.path.join(app.config['UPLOAD_FOLDER'], 'page_0.png')} tesseract-result")
     with open('tesseract-result.txt', 'r') as file:
         body = file.read()
-            
+
     medicine_lines = re.findall(r"Tab\..+", body)
     medicine_lines_str = "\n".join(medicine_lines)
 
@@ -81,12 +75,12 @@ def send_message():
         note = ""
 
     message_body = f"\n{medicine_lines_str}\n\n{'Note from the doctor:' if note else ''}{note}"
-        
 
+    # Load Twilio credentials from environment variables
     twilio_account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
     twilio_auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-    twilio_number = os.environ.get('TWILIO_NUMBER') # Recommend moving this to env var too
-    target_number = os.environ.get('TARGET_NUMBER') # Recommend moving this to env var too
+    twilio_number = os.environ.get('TWILIO_NUMBER')
+    target_number = os.environ.get('TARGET_NUMBER')
 
     client = Client(twilio_account_sid, twilio_auth_token)
 
@@ -99,18 +93,7 @@ def send_message():
     print(message.body)
 
 
-     
-
-def schedule_task():
-    schedule.every().day.at("15:45").do(send_message)
-    schedule.every().day.at("15:05").do(send_message)
-    
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-scheduler_thread = threading.Thread(target=schedule_task)
-scheduler_thread.start()
+# Removed the schedule_task function and its thread setup
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -125,7 +108,6 @@ def upload_file():
             pdf_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(pdf_file)
             png_files = convert_pdf_to_png(pdf_file)
-            # send_message(png_files)
             return "File uploaded successfully and text extracted."
     return '''
   <!doctype html>
@@ -158,9 +140,8 @@ def upload_report():
             pdf_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(pdf_file)
             png_files = convert_pdf_to_png_report(pdf_file)
-            send_report()
-            # redirect('http://localhost:5173/users/profile/me/analysis')
-            # send_message(png_files)
+            send_report() # Calls send_report after conversion
+            # Removed redirect to localhost:5173 as this is a Flask API now.
             return "Report uploaded Successfully. Kindly Check Analysis on Portal"
     return '''
 <!DOCTYPE html>
@@ -190,42 +171,41 @@ def upload_report():
     '''
 
 @app.route('/gen', methods=['GET', 'POST'])
-# def check():
-#     response = model.generate_content("What is the meaning of life?")
-#     return response
 def gen():
-    upload_report()
-    send_report()
-    prompt = request.args.get('prompt', '')  # Get prompt from query parameter
-    response = model.generate_content("Generate same json data format as mentioned [{Test_Name: , Result: ,Normal_Range: ,Explanation: }}] only array of objects and dont mention any ``` and without markdown format also provide explaination of Test_Name in each object in Explanation field and give the result according to ranges the result should not deviate much from ranges in some cases you may update it if deviation of result is too large from normal range"+data2)
-    # to_markdown(response.text)
-    if not response:
-        return jsonify({'error': 'Text is required'}), 400
+    # Calling upload_report() and send_report() here again might be redundant if this is called after /report
+    # Consider if /gen should expect the report to already be processed or if it triggers processing itself.
+    # For now, keeping as is, but be aware of potential redundant processing.
+    # upload_report() # This would expect a file in the request, which /gen might not have.
+    send_report() # This will process the last saved page_1.png
+
+    # Get prompt from query parameter (e.g., /gen?prompt=your_question)
+    # The prompt might be better sent in the request body for POST requests.
+    prompt = request.args.get('prompt', '')
+    
+    # Ensure data2 is populated before calling model.generate_content
+    # if not data2:
+    #     return jsonify({'error': 'No report data available. Please upload a report first.'}), 400
+
+    full_prompt = "Generate same json data format as mentioned [{Test_Name: , Result: ,Normal_Range: ,Explanation: }}] only array of objects and dont mention any ``` and without markdown format also provide explaination of Test_Name in each object in Explanation field and give the result according to ranges the result should not deviate much from ranges in some cases you may update it if deviation of result is too large from normal range" + data2
+    response = model.generate_content(full_prompt)
+
+    if not response.text: # Use response.text instead of just response
+        return jsonify({'error': 'No content generated from Gemini API'}), 400
 
     try:
+        # Assuming response.text is already a JSON string that can be directly parsed
+        # If it's not a valid JSON string, you might need to use json.loads()
+        # For now, let's assume it directly returns parsable JSON text
         print(response.text)
-        return jsonify(response.text)
+        return jsonify(response.text) # Returning a JSON string inside a jsonify()
     except genai.ApiError as e:
         return jsonify({'error': str(e)}), 500
-    # generated_data = [
-    #     {
-    #         "Test_Name": "Test 1",
-    #         "Result": "Result 1",
-    #         "Normal_Range": "Normal Range 1",
-    #         "Explanation": "Explanation 1"
-    #     },
-    #     {
-    #         "Test_Name": "Test 2",
-    #         "Result": "Result 2",
-    #         "Normal_Range": "Normal Range 2",
-    #         "Explanation": "Explanation 2"
-    #     },
-    #     # Add more data as needed
-    # ]
-
-    # Return JSON response
-    # return jsonify(generated_data)
 
 
 if __name__ == "__main__":
+    # In a production environment, gunicorn will run the app.
+    # This block is primarily for local development.
+    # Ensure UPLOAD_FOLDER exists if running locally.
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     app.run(debug=False, port=8080, host='0.0.0.0')
