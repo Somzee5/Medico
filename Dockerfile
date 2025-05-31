@@ -32,4 +32,4 @@ EXPOSE $PORT
 
 # Define the command to run your Flask app with Gunicorn
 # This explicitly points to your app within the Flask/ directory
-CMD gunicorn --bind 0.0.0.0:$PORT Flask/app.py:app
+CMD gunicorn --bind 0.0.0.0:$PORT Flask.app:app
