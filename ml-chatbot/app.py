@@ -4,6 +4,7 @@ from ml_utils import extract_input, extract_language
 import pandas as pd
 import joblib
 import traceback
+import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
@@ -38,4 +39,5 @@ def predict():
         return jsonify({"response": "Sorry, an error occurred during processing."}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    port = int(os.environ.get("PORT", 5001))
+    app.run(debug=True, host='0.0.0.0', port=port)
