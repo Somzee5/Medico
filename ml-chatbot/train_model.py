@@ -16,13 +16,6 @@ df = pd.read_csv("chatbot_multilingual_dataset.csv")
 X = df[['input', 'language']]
 y = df['intent']
 
-# ✅ Step 2: Define named functions for compatibility
-def extract_input(X):
-    return X['input']
-
-def extract_language(X):
-    return X[['language']]
-
 # ✅ Step 3: Preprocessing pipelines
 text_pipeline = Pipeline([
     ('selector', FunctionTransformer(extract_input, validate=False)),
