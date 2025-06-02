@@ -12,7 +12,12 @@ import pathlib
 import textwrap # Still here for safety, though to_markdown was removed
 
 app = Flask(__name__)
-CORS(app) # Allows cross-origin requests
+
+# --- CORS Configuration Update ---
+# Allow requests only from your local development frontend and your deployed Render frontend
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://mediease-frontend-app.onrender.com"]}})
+# --- End CORS Configuration Update ---
+
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'pdf'}
