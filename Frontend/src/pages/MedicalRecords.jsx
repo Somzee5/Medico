@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import HashLoader from 'react-spinners/HashLoader';
 import uploadImageToCloudinary from '../utils/uploadCloudinary';
+import { BASE_URL } from '../../config';
 
 const MedicalRecordsPage = () => {
     // We will get the token directly from localStorage
@@ -27,7 +28,7 @@ const MedicalRecordsPage = () => {
 
         try {
             setLoading(true);
-            const res = await fetch(`http://localhost:5000/api/v1/documents`, {
+            const res = await fetch(`${BASE_URL}/documents`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ const MedicalRecordsPage = () => {
                 throw new Error('Cloudinary upload failed or returned incomplete data.');
             }
 
-            const backendRes = await fetch('http://localhost:5000/api/v1/documents/save', {
+            const backendRes = await fetch(`${BASE_URL}/documents/save`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ const MedicalRecordsPage = () => {
 
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:5000/api/v1/documents/${publicId}`, {
+            const res = await fetch(`${BASE_URL}/documents/${publicId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
