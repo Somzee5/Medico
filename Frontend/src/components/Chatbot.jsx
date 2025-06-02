@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaTimes, FaPaperPlane, FaGlobe } from 'react-icons/fa';
-import { ML_CHATBOT_API_URL } from '../../config';
+import { ML_CHATBOT_API_URL } from '../config.js';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
