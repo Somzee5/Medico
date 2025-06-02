@@ -1,4 +1,4 @@
-import Document from '../models/docsSchema.js'; // Import the Document model (user_doc)
+import Document from "../models/DocsSchema.js"; // Import the Document model (user_doc)
 // You might need to import cloudinary here if you intend to delete from Cloudinary when deleting from DB
 // import cloudinary from 'cloudinary';
 // cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
