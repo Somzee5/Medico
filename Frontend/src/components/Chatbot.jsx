@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaTimes, FaPaperPlane, FaGlobe } from 'react-icons/fa';
+import { ML_CHATBOT_API_URL } from '../../config';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,16 +24,14 @@ const Chatbot = () => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (inputMessage.trim() === '') return;
 
-    // Add user message to chat
-    const userMessage = { text: inputMessage, sender: 'user' };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages([...messages, { text: inputMessage, sender: 'user' }]);
     setInputMessage('');
+    setIsTyping(true);
 
     try {
-      // Send message to backend
-      const response = await fetch('http://localhost:5001/predict', {
+      const response = await fetch(`${ML_CHATBOT_API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

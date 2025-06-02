@@ -5,6 +5,7 @@ import { BiMenu } from "react-icons/bi";
 import { authContext } from "../../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { NODE_API_URL } from '../../config';
 
 const navLinks = [
   { path: "/home", display: "Home" },
@@ -70,7 +71,7 @@ const Header = () => {
   
           try {
             const res = await axios.patch(
-              "http://localhost:5000/api/v1/ambulances/availability",
+              `${NODE_API_URL}/ambulances/availability`,
               {
                 isAvailable: newStatus, // 🔄 this matches backend schema
                 latitude,

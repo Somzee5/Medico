@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useGetProfile from '../../hooks/useFetchData.jsx';
-import { BASE_URL } from '../../config.js';
+import { BASE_URL, NODE_API_URL } from '../../config';
 
 const   DocumentUpload = () => {
   const { data, loading, error } = useGetProfile(`${BASE_URL}/users/profile/me`);
@@ -66,7 +66,7 @@ const   DocumentUpload = () => {
               </td>
               <td className='border-b-2 border-r-2 border-gray-400 p-4 text-center'>
                 <a 
-                  href={`http://localhost:5000/docs/${encodeURIComponent(item.name)}`} 
+                  href={`${NODE_API_URL}/docs/${encodeURIComponent(item.name)}`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className='text-blue-800'
