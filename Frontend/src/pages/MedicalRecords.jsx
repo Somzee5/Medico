@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import HashLoader from 'react-spinners/HashLoader';
 import uploadImageToCloudinary from '../utils/uploadCloudinary';
-import { BASE_URL } from '../../config';
+import { BASE_URL } from '../config.js';
 
 const MedicalRecordsPage = () => {
     // We will get the token directly from localStorage
