@@ -7,7 +7,11 @@ import traceback
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+
+# --- CORS Configuration Update ---
+# Update this line to include your deployed frontend URL in the origins list
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://mediease-frontend-app.onrender.com"]}})
+# --- End CORS Configuration Update ---
 
 # Load multilingual model and response dictionary
 model = joblib.load("chatbot_multilingual_model.joblib")
