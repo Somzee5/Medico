@@ -1,6 +1,6 @@
 import express from "express"
 import cookieParser from "cookie-parser"
-import cors from 'cors'
+import cors from 'cors' // Ensure cors is imported if not already
 import mongoose from "mongoose"
 import dotenv from 'dotenv'
 import authRoute from './Routes/auth.js'
@@ -18,12 +18,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-//to access docs     --multer
-app.use(express.static('public'))
+// Define your allowed origins for CORS
+const allowedOrigins = [
+    'http://localhost:5173', // For your local frontend development
+    'https://mediease-frontend-app.onrender.com' // Your deployed frontend URL
+    // Add any other specific origins if needed in the future
+];
 
+// CORS Options configuration
 const corsOption = {
-    origin: true
-}
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // or if the origin is in our allowedOrigins list
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true // Important for handling cookies, authorization headers, etc.
+};
+
+// to access docs    --multer
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
     res.send("Api is working");
@@ -33,7 +50,7 @@ mongoose.set('strictQuery', false)
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL, {
-            // useNewUrlParser : true,
+            // useNewUrlParser : true, // These options are no longer necessary in recent Mongoose versions
             // useUnifiedTopology : true
         })
         console.log(`MongoDB Database Connected`);
@@ -46,7 +63,7 @@ const connectDB = async () => {
 //Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOption));
+app.use(cors(corsOption)); // Apply the configured corsOption
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/doctors', doctorRoute);
