@@ -47,7 +47,6 @@ const Routers = () => {
       <Route path="/admin/dashboard/" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
       <Route path="/doctors/profile/me/prescription" element={<ProtectedRoute allowedRoles={['doctor']}><Prescription /></ProtectedRoute>} /> 
       <Route path="/doctors/profile/me/sendprescription" element={<ProtectedRoute allowedRoles={['doctor']}><SendPrescription /></ProtectedRoute>} /> 
-      <Route path="/users/profile/me/analysis" element={<ProtectedRoute allowedRoles={['patient']}><GenAi /></ProtectedRoute>} /> 
     </Routes>
   );
 };
