@@ -17,22 +17,4 @@ export const services = [
     bgColor: "rgba(1, 181, 197, .2)",
     textColor: "#01B5C5",
   },
-  {
-    name: "Medicine and Follow-up Reminders",
-    desc: "Receive timely reminders for medication intake and upcoming follow-up appointments based on your prescription. Stay on track with your treatment plan and ensure timely visits to your doctor for better health management.",
-    bgColor: "rgba(1, 181, 197, .2)",
-    textColor: "#01B5C5",
-  },
-  {
-    name: "Thorough Analysis of Lab Records With AI",
-    desc: "Generative Ai analyize the lab reports of the patient and based on that they give a breif description about patient history with proper alerts and help them to understand difficult medical terms in an understanable way. ",
-    bgColor: "rgba(1, 181, 197, .2)",
-    textColor: "#01B5C5",
-  },
-  // {
-  //   name: "Confidential Support for Mental Health",
-  //   desc: "Our platform provides a safe and confidential space for depression patients to connect with qualified professionals. Talk to a doctor anonymously and schedule therapy sessions if needed, all within a supportive environment.",
-  //   bgColor: "rgba(254, 182, 13, .2)",
-  //   textColor: "#FEB60D",
-  // },
 ];
