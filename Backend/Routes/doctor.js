@@ -17,6 +17,7 @@ router.put('/:id', authenticate, restrict(['doctor']), updateDoctor)
 router.delete('/:id', authenticate, restrict(['doctor']), deleteDoctor)
 
 router.get('/profile/me', authenticate, restrict(['doctor']), getDoctorProfile)
+router.delete('/profile/me', authenticate, restrict(['doctor']), deleteDoctor)
 
 router.post('/profile/me/sendprescription', authenticate, restrict(['doctor']), SendPrescription)
 router.post("/search", searchDoctors);

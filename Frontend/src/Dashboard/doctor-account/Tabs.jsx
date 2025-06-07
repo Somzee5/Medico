@@ -41,7 +41,6 @@ const Tabs = ({ tab, setTab }) => {
               ? "bg-indigo-100 text-primaryColor"
               : "bg-transparent text-headingColor"
           } w-full btn mt-0 rounded-md shadow-sm`}
-          // disabled={data && (data.isApproved === 'cancelled' || data.isApproved === 'pending')}
         >
           {data && (data.isApproved === 'cancelled' || data.isApproved === 'pending') ? 
             <p className="">Appointments</p> : 
@@ -77,9 +76,6 @@ const Tabs = ({ tab, setTab }) => {
             className="w-full bg-[#181A1E] p-3 text-[16px] leading-7 rounded-md text-white"
           >
             Logout
-          </button>
-          <button className="w-full bg-red-600 mt-4 p-3 text-[16px] leading-7 rounded-md text-white">
-            Delete Account
           </button>
         </div>
       </div>
