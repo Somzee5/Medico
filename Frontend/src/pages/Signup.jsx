@@ -3,7 +3,7 @@ import signupImg from "../assets/images/signup.gif";
 import { Link, useNavigate } from "react-router-dom";
 import avatar from "../assets/images/doctor-img01.png";
 import uploadImageToCloudinary from "../utils/uploadCloudinary";
-import { BASE_URL } from "../config";
+import { BASE_URL, DEFAULT_PROFILE_PICTURE } from "../config";
 import { toast } from "react-toastify";
 import HashLoader from "react-spinners/HashLoader";
 
@@ -352,17 +352,14 @@ const Signup = () => {
             )}
 
               {/* Photo Upload */}
-              {/* Photo Upload */}
               <div className="mb-5 flex items-center gap-3">
-                {selectedFile && (
-                  <figure className="w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center">
-                    <img
-                      src={previewURL}
-                      alt=""
-                      className="w-full rounded-full"
-                    />
-                  </figure>
-                )}
+                <figure className="w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center">
+                  <img
+                    src={previewURL || DEFAULT_PROFILE_PICTURE}
+                    alt=""
+                    className="w-full rounded-full"
+                  />
+                </figure>
 
                 <div className="relative w-[130px] h-[50px]">
                   <input

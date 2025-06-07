@@ -3,7 +3,7 @@ import { authContext } from "../../context/AuthContext";
 import MyBookings from "./MyBookings";
 import Profile from "./Profile.jsx";
 import useGetProfile from "../../hooks/useFetchData.jsx";
-import { BASE_URL } from "../../config";
+import { BASE_URL, DEFAULT_PROFILE_PICTURE } from "../../config";
 import Loading from "../../components/Loader/Loading.jsx";
 import Error from "../../components/Error/Error.jsx";
 import { Link } from "react-router-dom";
@@ -34,7 +34,7 @@ const MyAccount = () => {
               <div className="flex items-center justify-center">
                 <figure className="w-[100px] h-[100px] rounded-full border-2 border-solid border-primaryColor">
                   <img
-                    src={userData.photo}
+                    src={userData.photo || DEFAULT_PROFILE_PICTURE}
                     alt=""
                     className="w-full h-full rounded-full"
                   />

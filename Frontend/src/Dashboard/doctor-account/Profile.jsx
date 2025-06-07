@@ -3,7 +3,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 // Profile.jsx
 
 import  uploadImageToCloudinary  from '../../../src/utils/uploadCloudinary.js';
-import { BASE_URL,token } from "./../../config.js";
+import { BASE_URL,token, DEFAULT_PROFILE_PICTURE } from "./../../config.js";
 import { toast } from 'react-toastify';
 import HashLoader from 'react-spinners/HashLoader'
 
@@ -517,11 +517,11 @@ const deleteItem=(key,index)=>{
         </div>
         <div className="mb-5 flex items-center gap-3">
           {formData.photo && (
-            <figure className="w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center">
+            <figure className="w-12 h-12 rounded-full border-2 border-solid border-primaryColor overflow-hidden">
               <img
-                src={formData.photo}
-                alt=""
-                className="w-full rounded-full"
+                src={formData.photo || DEFAULT_PROFILE_PICTURE}
+                alt="Avatar"
+                className="w-full h-full object-cover"
               />
             </figure>
           )}

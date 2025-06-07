@@ -5,7 +5,7 @@ import { BiMenu } from "react-icons/bi";
 import { authContext } from "../../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { NODE_API_URL } from '../../config';
+import { NODE_API_URL, DEFAULT_PROFILE_PICTURE } from '../../config';
 
 const navLinks = [
   { path: "/home", display: "Home" },
@@ -175,7 +175,7 @@ const Header = () => {
                 >
                   <figure className="w-[35px] h-[35px] rounded-full cursor-pointer">
                     <img
-                      src={user?.photo}
+                      src={user?.photo || DEFAULT_PROFILE_PICTURE}
                       className="w-full rounded-full"
                       alt="user"
                     />
