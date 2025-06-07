@@ -6,23 +6,55 @@ import useGetProfile from "../../hooks/useFetchData.jsx";
 import { BASE_URL, DEFAULT_PROFILE_PICTURE } from "../../config";
 import Loading from "../../components/Loader/Loading.jsx";
 import Error from "../../components/Error/Error.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AmbulanceMyBookings from "./AmbulanceMyBookings.jsx";
+import { toast } from "react-toastify";
 
 const MyAccount = () => {
   const { dispatch } = useContext(authContext);
   const [tab, setTab] = useState("appointments");
+  const navigate = useNavigate();
   const {
     data: userData,
     loading,
     error,
   } = useGetProfile(`${BASE_URL}/users/profile/me`);
 
-  
-
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
   };
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/users/${userData._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete account");
+      }
+
+      toast.success("Account deleted successfully");
+      dispatch({ type: "LOGOUT" });
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error(error.message || "Failed to delete account");
+    }
+  };
+
   return (
     <section>
       <div className="max-w-[1170px] px-5 mx-auto shadow-lg p-2">
@@ -55,7 +87,6 @@ const MyAccount = () => {
                 </p>
               </div>
 
-
               {/* document upload button */}
               <Link to="/users/profile/me/documents">
               <button  
@@ -78,7 +109,10 @@ const MyAccount = () => {
                 >
                   Logout
                 </button>
-                <button className="w-full bg-red-600 mt-4 p-3 text-[16px] leading-7 rounded-md text-white hover:bg-white hover:text-red-600 border-2 border-red-600">
+                <button 
+                  onClick={handleDeleteAccount}
+                  className="w-full bg-red-600 mt-4 p-3 text-[16px] leading-7 rounded-md text-white hover:bg-white hover:text-red-600 border-2 border-red-600"
+                >
                   Delete Account
                 </button>
               </div>
