@@ -4,6 +4,7 @@ import DoctorCard from "../../components/Doctors/DoctorCard";
 import Loading from "../../components/Loader/Loading";
 import Error from "../../components/Error/Error";
 import { formatDate } from "../../utils/formatDate";
+import { toast } from "react-toastify";
 
 const MyBookings = () => {
   const handleJoinMeeting = (url) => {
@@ -15,22 +16,34 @@ const MyBookings = () => {
       "Are you sure you want to cancel this booking?"
     );
     if (!confirmCancel) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.");
+      return;
+    }
+
     try {
       const response = await fetch(
         `${BASE_URL}/users/appointments/cancel/${bookingId}`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const result = await response.json();
       if (result.success) {
-        alert("Booking canceled successfully");
+        toast.success("Booking canceled successfully");
+        window.location.reload(); // Refresh to update the list
       } else {
-        alert("Error canceling booking: " + result.message);
+        toast.error(result.message || "Error canceling booking");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An unexpected error occurred");
+      toast.error("An unexpected error occurred");
     }
   };
 

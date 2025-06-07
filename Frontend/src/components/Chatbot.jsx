@@ -77,7 +77,7 @@ const Chatbot = () => {
           <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
             <div className="flex items-center gap-2">
               <FaRobot size={20} />
-              <span className="font-semibold">MediEase Assistant</span>
+              <span className="font-semibold">Medico Assistant</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}

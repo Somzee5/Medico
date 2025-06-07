@@ -18,7 +18,6 @@ const Profile = ({doctorData}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password:"",
     phone: "",
     bio: "",
     gender: "",
@@ -28,72 +27,81 @@ const Profile = ({doctorData}) => {
       { startingDate: "", endingDate: "", degree: "", university: "" },
     ],
     experiences: [
-       { startingDate: "", endingDate: "", degree: "", university: "" },
+      { startingDate: "", endingDate: "", position: "", hospital: "" },
     ],
     timeSlots: [],
     about: "",
-    photo: null,
-    yearofRegistartion:"",
-    registrationNumber:"",
+    photo: DEFAULT_PROFILE_PICTURE,
+    yearofRegistartion: "",
+    registrationNumber: "",
   });
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(()=>{
-       setFormData({
-    name: doctorData?.name,
-    email: doctorData?.email,
-    phone: doctorData?.phone,
-    bio: doctorData?.bio,
-    gender: doctorData?.gender,
-    specialization: doctorData?.specialization,
-    ticketPrice: doctorData?.ticketPrice,
-    qualifications: doctorData?.qualifications,
-    experiences: doctorData?.experiences,
-    timeSlots: doctorData?.timeSlots,
-    about: doctorData?.about,
-    photo: doctorData?.photo,
-    yearofRegistartion: doctorData?.yearofRegistartion,
-    registrationNumber: doctorData?.registrationNumber,
-       })
-  },[doctorData])
+  useEffect(() => {
+    if (doctorData) {
+      setFormData({
+        name: doctorData.name || "",
+        email: doctorData.email || "",
+        phone: doctorData.phone || "",
+        bio: doctorData.bio || "",
+        gender: doctorData.gender || "",
+        specialization: doctorData.specialization || "",
+        ticketPrice: doctorData.ticketPrice || 0,
+        qualifications: doctorData.qualifications || [{ startingDate: "", endingDate: "", degree: "", university: "" }],
+        experiences: doctorData.experiences || [{ startingDate: "", endingDate: "", position: "", hospital: "" }],
+        timeSlots: doctorData.timeSlots || [],
+        about: doctorData.about || "",
+        photo: doctorData.photo || DEFAULT_PROFILE_PICTURE,
+        yearofRegistartion: doctorData.yearofRegistartion || "",
+        registrationNumber: doctorData.registrationNumber || "",
+      });
+    }
+  }, [doctorData]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileInputChange =async event => {
-    const file=event.target.files[0];
-    const data=await uploadImageToCloudinary(file);
-    // console.log(data);
-    setFormData({...formData,photo:data?.url})
+  const handleFileInputChange = async event => {
+    const file = event.target.files[0];
+    if (file) {
+      const data = await uploadImageToCloudinary(file);
+      if (data?.url) {
+        setFormData(prev => ({ ...prev, photo: data.url }));
+      }
+    }
   };
 
   const updateProfileHandler = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
-    try{
-      // console.log(formData)
-     const res= await fetch(`${BASE_URL}/doctors/${doctorData._id}`,{
-      method:'PUT',
-      headers:{
-        'content-type':'application/json',
-        Authorization:`Bearer ${token}`
-      },
-      body:JSON.stringify(formData)
-     })
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
 
-     const result=await res.json();
-    //  console.log(result)
-     if(!res.ok){
-      throw Error(result.message);
-     }
-     setLoading(false)
-     toast.success(result.message);
-    }
-    catch(err){
-       toast.error(err.message);
-       setLoading(false)
+      const res = await fetch(`${BASE_URL}/doctors/${doctorData._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.message);
+      }
+
+      setLoading(false);
+      toast.success(result.message);
+    } catch (err) {
+      toast.error(err.message);
+      setLoading(false);
     }
   };
 
