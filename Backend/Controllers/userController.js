@@ -25,10 +25,10 @@ export const updateUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  const id = req.params.id;
+  const userId = req.userId;
 
   try {
-    await User.findByIdAndDelete(id);
+    await User.findByIdAndDelete(userId);
     res.status(200).json({ success: true, message: "Successfully Deleted" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Failed to Delete" });
