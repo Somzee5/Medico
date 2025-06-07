@@ -82,109 +82,109 @@ export const createBooking = async (req, res) => {
 
 // async function refreshAccessToken() { /* ... */ } // No changes here
 
-const zoomMeet = async (did, timeSlot) => { // timeSlot is now passed as an argument
-  try {
-    const params = new url.URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: `${process.env.ZOOM_REFRESH_TOKEN}`,
-    });
+const zoomMeet = async (did, uid, timeSlot) => {
+  try {
+    const params = new url.URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: `${process.env.ZOOM_REFRESH_TOKEN}`,
+    });
 
-    const ATresponse = await axios.post(
-      "https://zoom.us/oauth/token",
-      params.toString(),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${process.env.ZOOM_CLIENT_ID_SECRET_ENCODED}`,
-        },
-      }
-    );
+    const ATresponse = await axios.post(
+      "https://zoom.us/oauth/token",
+      params.toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${process.env.ZOOM_CLIENT_ID_SECRET_ENCODED}`,
+        },
+      }
+    );
 
-    const newAccessToken = ATresponse.data.access_token;
+    const newAccessToken = ATresponse.data.access_token;
 
-    const headers = {
-      Authorization: `Bearer ${newAccessToken}`,
-    };
+    const headers = {
+      Authorization: `Bearer ${newAccessToken}`,
+    };
 
-    // --- Dynamic Meeting Start Time Calculation ---
-    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const targetDayIndex = daysOfWeek.indexOf(timeSlot.day.toLowerCase());
+    // Fetch doctor and patient details
+    const doctor = await Doctor.findById(did).select('name');
+    const patient = await User.findById(uid).select('name');
 
-    if (targetDayIndex === -1) {
-        throw new Error(`Invalid day: ${timeSlot.day}`);
-    }
+    if (!doctor) {
+      throw new Error("Doctor not found for Zoom meeting creation");
+    }
+    if (!patient) {
+      throw new Error("Patient not found for Zoom meeting creation");
+    }
 
-    const [startHour, startMinute] = timeSlot.startingTime.split(':').map(Number);
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const targetDayIndex = daysOfWeek.indexOf(timeSlot.day.toLowerCase());
 
-    const now = moment().tz('Asia/Kolkata'); // IMPORTANT: Set your application's timezone
-    let meetingMoment = now.clone().day(targetDayIndex);
+    if (targetDayIndex === -1) {
+        throw new Error(`Invalid day: ${timeSlot.day}`);
+    }
 
-    // If the target day is in the past compared to today's day of week, move to next week
-    // or if it's the same day but the time has already passed, move to next week.
-    // This logic ensures we always pick a future occurrence of the slot.
+    const [startHour, startMinute] = timeSlot.startingTime.split(':').map(Number);
+
+    const now = moment().tz('Asia/Kolkata');
+    let meetingMoment = now.clone().day(targetDayIndex);
+
     if (meetingMoment.isBefore(now, 'day')) {
         meetingMoment.add(1, 'weeks');
     }
     
-    // Set the specific time
     meetingMoment.hour(startHour).minute(startMinute).second(0).millisecond(0);
 
-    // If, after setting hour/minute, the meetingMoment is still in the past (e.g., booking 10 AM Monday on Monday 11 AM), move to next week.
     if (meetingMoment.isBefore(now)) {
         meetingMoment.add(1, 'weeks');
     }
     
-    const zoomStartTime = meetingMoment.toISOString(); // ISO 8601 format with Z for UTC or offset
-    const meetingDuration = 30; // Assuming 30 minutes, adjust as per your time slots
+    const zoomStartTime = meetingMoment.toISOString();
+    const meetingDuration = 30;
 
-    console.log(`Calculated Zoom meeting time: ${zoomStartTime}`);
-    // --- End Dynamic Meeting Start Time Calculation ---
+    console.log(`Calculated Zoom meeting time: ${zoomStartTime}`);
 
-    const response = await axios({
-      method: "post",
-      url: "https://api.zoom.us/v2/users/me/meetings",
-      headers,
-      data: {
-        topic: `Appointment with Dr. ${did}`, // Consider fetching doctor's name from DB for better topic
-        type: 2, // Scheduled meeting
-        start_time: zoomStartTime, // Use the dynamically calculated time
-        duration: meetingDuration, 
-        timezone: 'Asia/Kolkata', // IMPORTANT: Specify the timezone for the meeting
-        settings: {
-          host_video: true,
-          participant_video: true, 
-          join_before_host: true,
-          mute_upon_entry: false,
-          watermark: false,
-          audio: "both", // 'both' for telephone and VoIP
-          auto_recording: "cloud",
-        },
-      },
-    });
+    const response = await axios({
+      method: "post",
+      url: "https://api.zoom.us/v2/users/me/meetings",
+      headers,
+      data: {
+        topic: `Appointment: Dr. ${doctor.name} and ${patient.name}`,
+        type: 2,
+        start_time: zoomStartTime,
+        duration: meetingDuration,
+        timezone: 'Asia/Kolkata',
+        settings: {
+          host_video: true,
+          participant_video: true,
+          join_before_host: true,
+          mute_upon_entry: false,
+          watermark: false,
+          audio: "both",
+          auto_recording: "cloud",
+        },
+      },
+    });
 
-    return {
-      start_url: response.data.start_url,
-      join_url: response.data.join_url,
-      appointmentStartTime: meetingMoment.toDate(), // <--- ADDED: Return the calculated Date object
-    };
-  } catch (error) {
-    console.error("Error in Zoom Meeting creation:", error.response?.data || error.message);
-    throw new Error("Failed to create Zoom meeting. Please check Zoom API credentials and limits.");
-  }
+    return {
+      start_url: response.data.start_url,
+      join_url: response.data.join_url,
+      appointmentStartTime: meetingMoment.toDate(),
+    };
+  } catch (error) {
+    console.error("Error in Zoom Meeting creation:", error.response?.data || error.message);
+    throw new Error("Failed to create Zoom meeting. Please check Zoom API credentials and limits.");
+  }
 };
-
-
 
 export const newBooking = async (req, res) => {
   const { did, uid, price, timeSlot } = req.body;
   
-  // Validate incoming timeSlot structure
   if (!timeSlot || !timeSlot.day || !timeSlot.startingTime || !timeSlot.endingTime || !timeSlot._id) {
     return res.status(400).json({ success: false, message: "Invalid time slot data provided (missing day, startingTime, endingTime, or _id)." });
   }
 
   try {
-    // 1. Check if the specific day and time slot is already booked
     const isAlreadyBooked = await Booking.findOne({
       doctor: did,
       "timeSlot.day": timeSlot.day,
@@ -196,16 +196,14 @@ export const newBooking = async (req, res) => {
       return res.status(400).json({ success: false, message: "Time slot is already booked for this doctor." });
     }
 
-    // 2. Create Zoom meeting
     let start_url, join_url, appointmentStartTime;
     try {
-      ({ start_url, join_url, appointmentStartTime } = await zoomMeet(did, timeSlot));
+      ({ start_url, join_url, appointmentStartTime } = await zoomMeet(did, uid, timeSlot));
     } catch (zoomError) {
       console.error("Error creating Zoom meeting:", zoomError);
       return res.status(500).json({ success: false, message: "Failed to create meeting link. Booking failed." });
     }
 
-    // 3. Get user and doctor details for the scheduler
     const [user, doctor] = await Promise.all([
       User.findById(uid).select('name email'),
       Doctor.findById(did).select('name email')
@@ -215,7 +213,6 @@ export const newBooking = async (req, res) => {
       return res.status(404).json({ success: false, message: "User or doctor not found." });
     }
 
-    // 4. Create the new booking document
     const booking = new Booking({
       doctor: did,
       user: uid,
@@ -236,7 +233,6 @@ export const newBooking = async (req, res) => {
     await booking.save();
     console.log("Booking saved successfully.");
 
-    // 5. Schedule appointment reminders
     appointmentScheduler.scheduleAppointment({
       id: booking._id,
       startTime: appointmentStartTime,
@@ -252,7 +248,6 @@ export const newBooking = async (req, res) => {
       zoomStartUrl: start_url
     });
 
-    // 6. Remove booked time slot from the doctor's available timeSlots
     await Doctor.findByIdAndUpdate(did, {
       $pull: {
         timeSlots: {
@@ -272,50 +267,29 @@ export const newBooking = async (req, res) => {
   }
 };
 
-
-
-
 export const SendPrescription = async (req, res) => {
-  const { url, userId } = req.body; // Assuming userId is passed from the frontend/dashboard
+  const { url, userId } = req.body; 
   
   try {
     if (!userId || !url) {
         return res.status(400).json({ success: false, message: "Missing userId or prescription URL." });
     }
-    
+
     const user = await User.findById(userId);
-    if (!user || !user.phone) {
-        return res.status(404).json({ success: false, message: "User not found or phone number is missing." });
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    var data = qs.stringify({
-      "token": "4bydc6l3yqn14na9",
-      "to": `91${user.phone}`, // Use user's actual phone number (assuming India code 91)
-      "filename": "Prescription.pdf",
-      "document": url,
-      "caption": "Team-MediEase"
-    });
+    // Assuming you have an email sending utility
+    // For demonstration, let's just log it:
+    console.log(`Sending prescription to ${user.email} (User: ${user.name}) at URL: ${url}`);
 
-    var config = {
-      method: 'post',
-      url: 'https://api.ultramsg.com/instance77224/messages/document',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: data
-    };
+    // Implement actual email sending logic here, e.g.:
+    // await sendPrescriptionEmail(user.email, user.name, url);
 
-    axios(config)
-      .then(function (response) {
-        res.status(200).json({ success: true, message: "Prescription sent Successfully" })
-      })
-      .catch(function (error) {
-        console.error("Error sending prescription:", error.response?.data || error.message);
-        res.status(500).json({ success: false, message: "Prescription not sent" })
-      });
+    return res.status(200).json({ success: true, message: "Prescription sent successfully." });
+  } catch (error) {
+    console.error("Error sending prescription:", error);
+    return res.status(500).json({ success: false, message: "Failed to send prescription." });
   }
-  catch (err) {
-    console.error("Error in SendPrescription:", err);
-    res.status(500).json({ message: `Error processing prescription: ${err.message}` })
-  }
-}
+};

@@ -84,39 +84,45 @@ const MyBookings = () => {
             </tr>
           </thead>
           <tbody>
-            {appointments?.map((item) => (
-              <tr key={item._id} className="border-b-2 border-gray-200">
-                <th scope="row" className=" text-gray-900 ap">
-                  <div className="pl-3">
-                    <div className="text-base font-semibold">
-                      {item.doctor.name}
+            {appointments?.map((item) => {
+              const appointmentDateTime = new Date(item.appointmentStartTime);
+              const isAppointmentPassed = appointmentDateTime < new Date();
+
+              return (
+                <tr key={item._id} className="border-b-2 border-gray-200">
+                  <th scope="row" className=" text-gray-900 ap">
+                    <div className="pl-3">
+                      <div className="text-base font-semibold">
+                        {item.doctor.name}
+                      </div>
                     </div>
-                  </div>
-                </th>
-                <td className="px-6 py-4">{item.ticketPrice}</td>
-                <td className="px-6 py-4">{formatDate(item.createdAt)}</td>
-                <td className="px-6 py-4">
-                  <button
-                    className=" bg-blue-500 text-white font-bold py-1 px-8 rounded shadow border-2 
-              border-blue-500 hover:bg-transparent hover:text-blue-500 teansition-all duration-300"
-                    onClick={() => handleJoinMeeting(item.join_url)}
-                  >
-                    {" "}
-                    Join
-                  </button>
-                </td>
-                <td className="px-6 py-4">
-                  {/* {console.log(item)} */}
-                  <button
-                    className="bg-red-500 text-white font-bold py-1 px-7 rounded shadow border-2 
-              border-red-500 hover:bg-transparent hover:text-red-500 transition-all duration-300"
-                    onClick={() => handleCancelBooking(item._id, item.timeSlot)}
-                  >
-                    Cancel
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </th>
+                  <td className="px-6 py-4">{item.ticketPrice}</td>
+                  <td className="px-6 py-4">{formatDate(item.appointmentStartTime)}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      className={`bg-blue-500 text-white font-bold py-1 px-8 rounded shadow border-2 
+                border-blue-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-blue-500 transition-all duration-300"}`}
+                      onClick={() => handleJoinMeeting(item.join_url)}
+                      disabled={isAppointmentPassed}
+                    >
+                      {" "}
+                      Join
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    {/* {console.log(item)} */}
+                    <button
+                      className="bg-red-500 text-white font-bold py-1 px-7 rounded shadow border-2 
+                border-red-500 hover:bg-transparent hover:text-red-500 transition-all duration-300"
+                      onClick={() => handleCancelBooking(item._id, item.timeSlot)}
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
