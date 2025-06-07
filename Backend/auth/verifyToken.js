@@ -13,11 +13,26 @@ export const authenticate = async(req,res,next) => {
         const decoded = jwt.verify(token , process.env.JWT_SECRET_KEY)
         req.userId = decoded.id
         req.role = decoded.role
+
+        // Check if user still exists in database
+        let user = null;
+        if (decoded.role === 'patient') {
+            user = await User.findById(decoded.id);
+        } else if (decoded.role === 'doctor') {
+            user = await Doctor.findById(decoded.id);
+        } else if (decoded.role === 'ambulance_service') {
+            user = await Ambulance.findById(decoded.id);
+        }
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: "User no longer exists" });
+        }
+
         next();
     }
     catch(err){
         if(err.name === 'TokenExpiredError'){
-            return res.json(401).json({message:"Token is Expired"})
+            return res.status(401).json({message:"Token is Expired"})
         }
         return res.status(401).json({success:false , message: "Invalid Token"})
     }
