@@ -3,20 +3,20 @@ import { updateUser, deleteUser, getAllUser, getSingleUser, getUserProfile, getM
 import { authenticate, restrict } from '../auth/verifyToken.js'
 import documentModel from '../models/DocsSchema.js'
 
-
 const router = express.Router()
 
-router.get('/:id', authenticate, restrict(['patient']), getSingleUser)
-router.get('/', authenticate, restrict(['admin']), getAllUser)
-router.put('/:id', authenticate, restrict(['patient']), updateUser)
-router.delete('/:id', authenticate, restrict(['patient']), deleteUser)
+// Profile routes
 router.get('/profile/me', authenticate, restrict(['patient']), getUserProfile)
-router.get('/appointments/my-appointments', authenticate, restrict(['patient']), getMyAppointments)
-router.get('/ambulanceappointments/my-appointments', authenticate, restrict(['patient']), getMyAmbulanceAppointments)
+router.delete('/profile/me', authenticate, restrict(['patient']), deleteUser)
+
+// Appointment routes
 router.delete('/appointments/cancel/:id', cancelBooking);
 router.delete('/ambulanceappointments/cancel/:id', cancelAmbulanceBooking);
-// router.delete('/appointments/ambulance/cancel/:id', cancelBooking);
 
+// Admin routes
+router.get('/', authenticate, restrict(['admin']), getAllUser)
+router.get('/:id', authenticate, restrict(['patient']), getSingleUser)
+router.put('/:id', authenticate, restrict(['patient']), updateUser)
 
 //multer 
 import multer from 'multer'

@@ -32,7 +32,7 @@ const MyAccount = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${BASE_URL}/users/${userData._id}`, {
+      const response = await fetch(`${BASE_URL}/users/profile/me`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
