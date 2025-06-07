@@ -1,5 +1,6 @@
 const upload_preset = import.meta.env.VITE_UPLOAD_PRESET
 const cloud_name = import.meta.env.VITE_CLOUD_NAME
+
 const uploadImageToCloudinary = async(file) => {
   const uploadData = new FormData()
 
@@ -12,6 +13,12 @@ const uploadImageToCloudinary = async(file) => {
     body:uploadData
   })
   const data = await res.json();
+  
+  // Ensure the URL uses HTTPS
+  if (data.url) {
+    data.url = data.url.replace('http://', 'https://');
+  }
+  
   return data;
 }
 
