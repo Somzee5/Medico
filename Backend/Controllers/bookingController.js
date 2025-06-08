@@ -167,7 +167,7 @@ const zoomMeet = async (did, uid, timeSlot) => {
     });
 
     return {
-      start_url: `${response.data.start_url}?uname=${encodeURIComponent(doctor.name)}`,
+      start_url: response.data.start_url,
       join_url: response.data.join_url,
       appointmentStartTime: meetingMoment.toDate(),
     };
