@@ -182,6 +182,8 @@ export const deleteDoctorBookingPermanently = async (req, res) => {
   const doctorId = req.userId; // Doctor ID from the authenticated token
   const userRole = req.role; // User role from the authenticated token
 
+  console.log(`[deleteDoctorBookingPermanently] Booking ID: ${bookingId}, Doctor ID from token: ${doctorId}, User Role: ${userRole}`);
+
   try {
     const booking = await Booking.findById(bookingId);
 
@@ -189,8 +191,12 @@ export const deleteDoctorBookingPermanently = async (req, res) => {
       return res.status(404).json({ success: false, message: "Booking not found" });
     }
 
+    console.log(`[deleteDoctorBookingPermanently] Found booking doctor ID: ${booking.doctor.toString()}`);
+    console.log(`[deleteDoctorBookingPermanently] Authorization check: userRole === 'doctor' && booking.doctor.toString() !== doctorId`);
+
     // Check if the current user (doctor) is authorized to delete this booking
     if (userRole === 'doctor' && booking.doctor.toString() !== doctorId) {
+      console.log(`[deleteDoctorBookingPermanently] Authorization FAILED: User is doctor but booking.doctor ID does not match.`);
       return res.status(403).json({ success: false, message: "Not authorized to delete this booking" });
     }
 
