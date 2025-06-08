@@ -1,5 +1,5 @@
 import express from 'express'
-import { updateUser, deleteUser, getAllUser, getSingleUser, getUserProfile, getMyAppointments, cancelBooking, getMyAmbulanceAppointments, cancelAmbulanceBooking } from '../Controllers/userController.js'
+import { updateUser, deleteUser, getAllUser, getSingleUser, getUserProfile, getMyAppointments, cancelBooking, getMyAmbulanceAppointments, cancelAmbulanceBooking, deletePatientBookingPermanently } from '../Controllers/userController.js'
 import { authenticate, restrict } from '../auth/verifyToken.js'
 import documentModel from '../models/DocsSchema.js'
 import multer from 'multer'
@@ -12,6 +12,7 @@ router.delete('/profile/me', authenticate, restrict(['patient']), deleteUser)
 
 // Appointment routes
 router.get('/appointments/my-appointments', authenticate, restrict(['patient']), getMyAppointments)
+router.delete('/appointments/delete/:id', authenticate, restrict(['patient']), deletePatientBookingPermanently)
 router.get('/ambulanceappointments/my-appointments', authenticate, restrict(['patient']), getMyAmbulanceAppointments)
 router.delete('/appointments/cancel/:id', authenticate, restrict(['patient']), cancelBooking)
 router.delete('/ambulanceappointments/cancel/:id', authenticate, restrict(['patient']), cancelAmbulanceBooking)

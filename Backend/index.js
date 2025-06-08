@@ -65,6 +65,13 @@ const connectDB = async () => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOption)); // Apply the configured corsOption
+
+// Temporary logging middleware to debug 404 for delete appointments
+app.use('/api/v1/users/appointments/delete', (req, res, next) => {
+    console.log(`[TEMP LOG] Incoming DELETE request to: ${req.originalUrl}`);
+    next();
+});
+
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/doctors', doctorRoute);

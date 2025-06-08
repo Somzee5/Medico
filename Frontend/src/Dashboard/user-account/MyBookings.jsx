@@ -5,6 +5,7 @@ import Loading from "../../components/Loader/Loading";
 import Error from "../../components/Error/Error";
 import { formatDate } from "../../utils/formatDate";
 import { toast } from "react-toastify";
+import { RiDeleteBinFill } from "react-icons/ri";
 
 const MyBookings = () => {
   const handleJoinMeeting = (url) => {
@@ -47,6 +48,42 @@ const MyBookings = () => {
     }
   };
 
+  const handleDeleteBooking = async (bookingId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to permanently delete this booking record? This action cannot be undone."
+    );
+    if (!confirmDelete) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/users/appointments/delete/${bookingId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      if (result.success) {
+        toast.success("Booking record deleted successfully");
+        window.location.reload(); // Refresh to update the list
+      } else {
+        toast.error(result.message || "Error deleting booking record");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An unexpected error occurred while deleting booking record");
+    }
+  };
+
   const {
     data: appointments,
     loading,
@@ -81,12 +118,23 @@ const MyBookings = () => {
               <th scope="col" className="px-6 py-3">
                 Cancel Appointment
               </th>
+              <th scope="col" className="px-6 py-3">
+                Delete Record
+              </th>
             </tr>
           </thead>
           <tbody>
             {appointments?.map((item) => {
-              const appointmentDateTime = new Date(item.appointmentStartTime);
-              const isAppointmentPassed = appointmentDateTime < new Date();
+              const appointmentStartDate = new Date(item.appointmentStartTime);
+              const [endHours, endMinutes] = item.timeSlot.endingTime.split(':').map(Number);
+              const appointmentEndDateTime = new Date(
+                appointmentStartDate.getFullYear(),
+                appointmentStartDate.getMonth(),
+                appointmentStartDate.getDate(),
+                endHours,
+                endMinutes
+              );
+              const isAppointmentPassed = appointmentEndDateTime < new Date();
 
               return (
                 <tr key={item._id} className="border-b-2 border-gray-200">
@@ -111,14 +159,25 @@ const MyBookings = () => {
                     </button>
                   </td>
                   <td className="px-6 py-4">
-                    {/* {console.log(item)} */}
                     <button
-                      className="bg-red-500 text-white font-bold py-1 px-7 rounded shadow border-2 
-                border-red-500 hover:bg-transparent hover:text-red-500 transition-all duration-300"
+                      className={`bg-red-500 text-white font-bold py-1 px-7 rounded shadow border-2 
+                border-red-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-red-500 transition-all duration-300"}`}
                       onClick={() => handleCancelBooking(item._id, item.timeSlot)}
+                      disabled={isAppointmentPassed}
                     >
                       Cancel
                     </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    {isAppointmentPassed && (
+                      <button
+                        className="text-red-500 text-2xl hover:text-red-700 transition-all duration-300"
+                        onClick={() => handleDeleteBooking(item._id)}
+                        title="Delete Record"
+                      >
+                        <RiDeleteBinFill />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

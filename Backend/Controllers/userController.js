@@ -216,3 +216,31 @@ export const cancelAmbulanceBooking = async (req, res) => {
 
 };
 
+export const deletePatientBookingPermanently = async (req, res) => {
+  const bookingId = req.params.id;
+  const userId = req.userId; // User ID from the authenticated token
+  const userRole = req.role; // User role from the authenticated token
+
+  console.log(`[deletePatientBookingPermanently] Attempting to delete booking: ${bookingId} by user: ${userId} (Role: ${userRole})`);
+
+  try {
+    const booking = await Booking.findById(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    // Check if the current user (patient) is authorized to delete this booking
+    if (userRole === 'patient' && booking.user.toString() !== userId) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this booking" });
+    }
+
+    await Booking.findByIdAndDelete(bookingId);
+
+    res.status(200).json({ success: true, message: "Booking deleted permanently" });
+  } catch (error) {
+    console.error("Error deleting booking permanently:", error);
+    res.status(500).json({ success: false, message: "Failed to delete booking permanently" });
+  }
+};
+

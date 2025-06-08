@@ -177,7 +177,31 @@ export const rejectdoctor = async (req, res) => {
     }
   };
 
-  // controllers/doctorController.js
+export const deleteDoctorBookingPermanently = async (req, res) => {
+  const bookingId = req.params.id;
+  const doctorId = req.userId; // Doctor ID from the authenticated token
+  const userRole = req.role; // User role from the authenticated token
+
+  try {
+    const booking = await Booking.findById(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+
+    // Check if the current user (doctor) is authorized to delete this booking
+    if (userRole === 'doctor' && booking.doctor.toString() !== doctorId) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this booking" });
+    }
+
+    await Booking.findByIdAndDelete(bookingId);
+
+    res.status(200).json({ success: true, message: "Booking deleted permanently" });
+  } catch (error) {
+    console.error("Error deleting booking permanently:", error);
+    res.status(500).json({ success: false, message: "Failed to delete booking permanently" });
+  }
+};
 
 export const searchDoctors = async (req, res) => {
     const { name, nearby, lat, lng } = req.body;

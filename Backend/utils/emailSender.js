@@ -56,7 +56,7 @@ export const sendAppointmentReminderEmail = async (recipientEmail, recipientName
                     ${isDoctor && startUrl ? `<p><b>Start Meeting Link (for Doctor):</b> <a href="${startUrl}" style="color: #2300a3;">Click here to start the meeting</a></p>` : ''}
                 </div>
                 <p>Please join on time. We wish you a productive session.</p>
-                <p>Best regards,<br>The MediEase Team</p>
+                <p>Best regards,<br>The Medico Team</p>
                 <hr style="border: 1px solid #eee; margin: 20px 0;">
                 <small style="color: #666;">This is an automated email. Please do not reply.</small>
             </div>
@@ -64,7 +64,7 @@ export const sendAppointmentReminderEmail = async (recipientEmail, recipientName
 
         const mailOptions = {
             from: {
-                name: 'MediEase',
+                name: 'Medico',
                 address: process.env.EMAIL_USER
             },
             to: recipientEmail,

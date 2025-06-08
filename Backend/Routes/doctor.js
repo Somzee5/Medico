@@ -1,5 +1,5 @@
 import express from 'express'
-import { updateDoctor, deleteDoctor, getAllDoctor, getSingleDoctor, getDoctorProfile } from '../Controllers/doctorController.js'
+import { updateDoctor, deleteDoctor, getAllDoctor, getSingleDoctor, getDoctorProfile, deleteDoctorBookingPermanently } from '../Controllers/doctorController.js'
 import { authenticate, restrict } from '../auth/verifyToken.js'
 import reviewRouter from './review.js'
 import { SendPrescription } from '../Controllers/bookingController.js'
@@ -18,6 +18,7 @@ router.delete('/:id', authenticate, restrict(['doctor']), deleteDoctor)
 
 router.get('/profile/me', authenticate, restrict(['doctor']), getDoctorProfile)
 router.delete('/profile/me', authenticate, restrict(['doctor']), deleteDoctor)
+router.delete('/appointments/delete/:id', authenticate, restrict(['doctor']), deleteDoctorBookingPermanently)
 
 router.post('/profile/me/sendprescription', authenticate, restrict(['doctor']), SendPrescription)
 router.post("/search", searchDoctors);
