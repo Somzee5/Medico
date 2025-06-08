@@ -21,7 +21,8 @@ const PORT = process.env.PORT || 8000;
 // Define your allowed origins for CORS
 const allowedOrigins = [
     'http://localhost:5173', // For your local frontend development
-    'https://mediease-frontend-app.onrender.com' // Your deployed frontend URL
+    'https://mediease-frontend-app.onrender.com', // Your deployed frontend URL
+    'https://medico-imgg.onrender.com'
     // Add any other specific origins if needed in the future
 ];
 

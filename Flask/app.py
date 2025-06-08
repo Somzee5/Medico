@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # --- CORS Configuration Update ---
 # Allow requests only from your local development frontend and your deployed Render frontend
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://mediease-frontend-app.onrender.com"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://mediease-frontend-app.onrender.com", "https://medico-imgg.onrender.com"]}})
 # --- End CORS Configuration Update ---
 
 
