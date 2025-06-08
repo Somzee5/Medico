@@ -114,6 +114,12 @@ body {
 }
 
 /* Bauble switch style - From Uiverse.io */
+.bauble_box {
+  position: relative;
+  width: 90px;
+  height: 40px;
+}
+
 .bauble_box .bauble_label {
   background:#c22 ;
   background-position: 62px 5px;
@@ -125,12 +131,9 @@ body {
   cursor: pointer;
   display: inline-block;
   font-size: 0;
-  height: 40px;
-  position: relative;
-  left: -60px;
-  top:20px;
+  height: 100%; /* Fill parent height */
+  width: 100%; /* Fill parent width */
   transition: all 500ms ease;
-  width: 90px;
 }
 
 .bauble_box .bauble_label:before {

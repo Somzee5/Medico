@@ -1,4 +1,4 @@
-import { useEffect, useRef, useContext, useState } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import logo from "../../assets/images/logo2.png";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
@@ -7,12 +7,32 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { NODE_API_URL, DEFAULT_PROFILE_PICTURE } from '../../config';
 
-const navLinks = [
-  { path: "/home", display: "Home" },
-  { path: "/doctors", display: "Find a Doctor" },
-  { path: "/ambulances", display: "Find an Ambulance" },
-  { path: "/services", display: "Services" },
-  { path: "/contact", display: "Contact" },
+const nav__links = [
+  {
+    path: "home",
+    display: "Home",
+    allowedRoles: ["patient", "doctor", "ambulance_service"]
+  },
+  {
+    path: "doctors",
+    display: "Find a Doctor",
+    allowedRoles: ["patient"]
+  },
+  {
+    path: "ambulances",
+    display: "Find an Ambulance",
+    allowedRoles: ["patient"]
+  },
+  {
+    path: "services",
+    display: "Services",
+    allowedRoles: ["patient", "doctor", "ambulance_service"]
+  },
+  {
+    path: "contact",
+    display: "Contact",
+    allowedRoles: ["patient", "doctor", "ambulance_service"]
+  }
 ];
 
 const Header = () => {
@@ -73,7 +93,7 @@ const Header = () => {
             const res = await axios.patch(
               `${NODE_API_URL}/ambulances/availability`,
               {
-                isAvailable: newStatus, // 🔄 this matches backend schema
+                isAvailable: isEngaged, // Swapped to send isEngaged directly
                 latitude,
                 longitude,
               },
@@ -118,44 +138,43 @@ const Header = () => {
             <img src={logo} alt="Logo" className="h-[50px] w-auto" />
           </div>
 
-          <div className="navigation one" ref={menuRef} onClick={toggleMenu}>
-            {role !== "admin" ? (
-              <ul className="menu flex items-center gap-[2.7rem]">
-                {navLinks.map((link, index) => (
-                  <li key={index} id={`step${index}`}>
-                    <NavLink
-                      to={link.path}
-                      className={({ isActive }) =>
-                        isActive
-                          ? "text-primaryColor text-[16px] leading-7 font-[600]"
-                          : "text-textColor text-[16px] leading-7 font-[500]"
-                      }
+          <div className="navigation" ref={menuRef} onClick={toggleMenu}>
+            <ul className="menu flex items-center gap-[2.7rem]">
+              {nav__links
+                .filter(link => !link.allowedRoles || link.allowedRoles.includes(role))
+                .map((item, index) => (
+                  <li key={index}>
+                    <Link
+                      to={item.path}
+                      className="text-headingColor text-[16px] leading-7 font-[500] hover:text-primaryColor"
                     >
-                      {link.display}
-                    </NavLink>
+                      {item.display}
+                    </Link>
                   </li>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-primaryColor text-center font-bold text-[30px]">
-                Welcome to Admin Dashboard
-              </p>
-            )}
+            </ul>
           </div>
 
           {role === "ambulance_service" && (
-  <div className="bauble_box ml-4">
-    <input
-      type="checkbox"
-      id="availability"
-      className="bauble_input"
-      checked={isEngaged}
-      onChange={handleAvailabilityToggle}
-      disabled={isLoading}
-    />
-    <label htmlFor="availability" className="bauble_label"></label>
-  </div>
-)}
+            <div className="flex items-center gap-4">
+              <span
+                className={`text-[16px] font-[700] whitespace-nowrap flex-shrink-0 z-10 ${!isEngaged ? "text-green-600" : "text-red-600"}`}
+              >
+                {!isEngaged ? "Free" : "Engaged"}
+              </span>
+              <div className="bauble_box ml-auto">
+                <input
+                  type="checkbox"
+                  id="availability"
+                  className="bauble_input"
+                  checked={!isEngaged}
+                  onChange={handleAvailabilityToggle}
+                  disabled={isLoading}
+                />
+                <label htmlFor="availability" className="bauble_label"></label>
+              </div>
+            </div>
+          )}
 
 
           <div className="flex items-center gap-4">
@@ -183,12 +202,11 @@ const Header = () => {
                 </Link>
 
                 
-                {/* <button
-                  className="w-full bg-primaryColor p-3 text-[16px] leading-7 rounded-md text-white ml-2"
+                <button
                   onClick={handleLogout}
-                >
-                  Logout
-                </button> */}
+                  className="bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]"
+                  >Logout
+                </button>
               </div>
             ) : (
               <Link to="/login">
@@ -199,7 +217,7 @@ const Header = () => {
             )}
 
             <span className="md:hidden" onClick={toggleMenu}>
-              <BiMenu className="w-6 h-6 cursor-pointer" />
+              <i className="ri-menu-line"></i>
             </span>
           </div>
         </div>

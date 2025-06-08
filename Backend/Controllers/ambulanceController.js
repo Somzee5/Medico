@@ -59,7 +59,7 @@ export const getNearbyAmbulances = async (req, res) => {
 
         // Filter ambulances by availability today and general availability
         const baseFilter = {
-            isAvailable: true,
+            isAvailable: true, // Ensuring this is true to show Free ambulances
             [`availability.${today}`]: true,  // dynamic field for today's availability
             location: {
                 $near: {
@@ -155,7 +155,7 @@ export const getAllAmbulance = async (req, res) => {
   
       // Base filter: must be available and available today
       const baseFilter = {
-        isAvailable: true,
+        isAvailable: true, // Ensuring this is true to show Free ambulances
         [`availability.${today}`]: true,
       };
   
