@@ -5,8 +5,9 @@ import useGetProfile from "../../hooks/useFetchData";
 import { BASE_URL } from "../../config";
 import Tabs from "./AmbulanceTabs";
 import AmbulanceBooking from "./AmbulanceBooking";
-// import Profile from "./Profile";
-// import Bookings from "./Bookings";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 // import ambulanceIcon from "../../assets/images/ambulance-icon.png";
 
 const AmbulanceDashboard = () => {
@@ -14,8 +15,40 @@ const AmbulanceDashboard = () => {
   const { data, loading, error } = useGetProfile(
     `${BASE_URL}/ambulances/profile/me`
   );
-
+  const navigate = useNavigate();
+  const { dispatch } = useAuth();
   const [tab, setTab] = useState("overview");
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/ambulances/${data._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete account");
+      }
+
+      toast.success("Account deleted successfully");
+      dispatch({ type: "LOGOUT" });
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error(error.message || "Failed to delete account");
+    }
+  };
 
   return (
     <section>
@@ -97,6 +130,14 @@ const AmbulanceDashboard = () => {
                   <AmbulanceBooking appointment={data?.appointments} />
                 )}
               </div>
+            </div>
+            <div className="mt-[30px] md:mt-0">
+              <button 
+                onClick={handleDeleteAccount}
+                className="w-full bg-red-600 mt-4 p-3 text-[16px] leading-7 rounded-md text-white hover:bg-white hover:text-red-600 border-2 border-red-600"
+              >
+                Delete Account
+              </button>
             </div>
           </div>
         )}

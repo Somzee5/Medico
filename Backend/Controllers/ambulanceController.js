@@ -96,15 +96,33 @@ export const getNearbyAmbulances = async (req, res) => {
 
 
 export const deleteAmbulance = async (req, res) => {
-    const id = req.params.id
     try {
-        await Ambulance.findByIdAndDelete(id)
-        res.status(200).json({ success: true, message: 'Successfully Deleted' })
+        // If deleting through profile/me, use req.userId
+        // If deleting through admin or direct ID, use req.params.id
+        const id = req.params.id || req.userId;
+        
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'No ambulance ID provided' });
+        }
+
+        // Delete all bookings associated with this ambulance
+        await AmbulanceBooking.deleteMany({ ambulance: id });
+        
+        // Delete the ambulance
+        const deletedAmbulance = await Ambulance.findByIdAndDelete(id);
+        
+        if (!deletedAmbulance) {
+            return res.status(404).json({ success: false, message: 'Ambulance not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Successfully Deleted' });
     }
     catch (err) {
-        res.status(500).json({ success: false, message: 'Failed to Delete' })
+        console.error('Error deleting ambulance:', err);
+        res.status(500).json({ success: false, message: 'Failed to Delete' });
     }
 }
+
 export const deleteAmbulanceAdmin = async (req, res) => {
     const id = req.body.id
     try {

@@ -14,15 +14,33 @@ export const updateDoctor = async (req, res) => {
 }
 
 export const deleteDoctor = async (req, res) => {
-    const id = req.params.id
     try {
-        await Doctor.findByIdAndDelete(id)
-        res.status(200).json({ success: true, message: 'Successfully Deleted' })
+        // If deleting through profile/me, use req.userId
+        // If deleting through admin or direct ID, use req.params.id
+        const id = req.params.id || req.userId;
+        
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'No doctor ID provided' });
+        }
+
+        // Delete all bookings associated with this doctor
+        await Booking.deleteMany({ doctor: id });
+        
+        // Delete the doctor
+        const deletedDoctor = await Doctor.findByIdAndDelete(id);
+        
+        if (!deletedDoctor) {
+            return res.status(404).json({ success: false, message: 'Doctor not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Successfully Deleted' });
     }
     catch (err) {
-        res.status(500).json({ success: false, message: 'Failed to Delete' })
+        console.error('Error deleting doctor:', err);
+        res.status(500).json({ success: false, message: 'Failed to Delete' });
     }
 }
+
 export const deleteDoctorAdmin = async (req, res) => {
     const id = req.body.id
     try {

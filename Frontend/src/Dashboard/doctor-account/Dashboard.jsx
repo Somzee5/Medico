@@ -42,7 +42,7 @@ const Dashboard = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${BASE_URL}/doctors/profile/me`, {
+      const response = await fetch(`${BASE_URL}/doctors/${data._id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
