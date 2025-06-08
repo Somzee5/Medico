@@ -6,9 +6,10 @@ import { authContext } from "../../context/AuthContext";
 import { RiDeleteBinFill } from "react-icons/ri";
 
 const Appointment = ({ appointment }) => {
-  const { token, role } = useContext(authContext);
+  const { token, role } = useContext(authContext); // 'role' is crucial here
 
-  const handleJoinMeeting = (url) => {
+  const handleJoinMeeting = (url, userRole) => {
+    console.log(`User role: ${userRole}. Attempting to join meeting using URL: ${url}`);
     window.open(url, "_blank");
   };
 
@@ -102,7 +103,7 @@ const Appointment = ({ appointment }) => {
             Booked On
           </th>
           <th scope="col" className="px-6 py-3">
-            Start URL
+            Meeting Link {/* Changed from "Start URL" for generality */}
           </th>
           <th scope="col" className="px-6 py-3">
             Cancel Appointment
@@ -125,6 +126,11 @@ const Appointment = ({ appointment }) => {
             endMinutes
           );
           const isAppointmentPassed = appointmentEndDateTime < new Date();
+
+          // Determine which URL to use based on user role
+          const meetingUrl = role === 'doctor' ? item.start_url : item.join_url;
+          const buttonText = role === 'doctor' ? "Start Meeting" : "Join Meeting"; // Adjust button text
+
           return (
             <tr key={item._id} className="shadow">
               <th
@@ -163,18 +169,17 @@ const Appointment = ({ appointment }) => {
               <td className="px-6 py-4">
                 <button
                   className={`mt-auto bg-blue-500 text-white font-bold py-1 px-8 rounded shadow border-2 
-                border-blue-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-blue-500 teansition-all duration-300"}`}
-                  onClick={() => handleJoinMeeting(item.start_url)}
+                    border-blue-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-blue-500 teansition-all duration-300"}`}
+                  onClick={() => handleJoinMeeting(meetingUrl, role)} // Pass the correct URL and role
                   disabled={isAppointmentPassed}
                 >
-                  {" "}
-                  Start
+                  {buttonText}{" "}
                 </button>
               </td>
               <td className="px-6 py-4">
                 <button
                   className={`bg-red-500 text-white font-bold py-1 px-7 rounded shadow border-2 
-              border-red-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-red-500 transition-all duration-300"}`}
+                  border-red-500 ${isAppointmentPassed ? "opacity-50 cursor-not-allowed" : "hover:bg-transparent hover:text-red-500 transition-all duration-300"}`}
                   onClick={() => handleCancelBooking(item._id)}
                   disabled={isAppointmentPassed}
                 >

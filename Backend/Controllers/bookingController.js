@@ -84,6 +84,9 @@ export const createBooking = async (req, res) => {
 
 const zoomMeet = async (did, uid, timeSlot) => {
   try {
+    console.log("ZOOM_REFRESH_TOKEN: ", process.env.ZOOM_REFRESH_TOKEN ? "Loaded" : "Not Loaded");
+    console.log("ZOOM_CLIENT_ID_SECRET_ENCODED: ", process.env.ZOOM_CLIENT_ID_SECRET_ENCODED ? "Loaded" : "Not Loaded");
+
     const params = new url.URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: `${process.env.ZOOM_REFRESH_TOKEN}`,
