@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaGithub, FaEnvelope } from "react-icons/fa";
+import logo from '../../assets/images/logo2.png';
 
 const Footer = () => {
   return (
@@ -9,7 +10,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">MediEase</h3>
+            <img src={logo} alt="Medico Logo" className="w-[200px] h-[200px] mb-4" />
+            <h3 className="text-xl font-bold mb-4">Medico</h3>
             <p className="text-gray-400">
               Your trusted partner in healthcare, connecting patients with
               qualified doctors and providing comprehensive medical services.
@@ -80,7 +82,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} MediEase. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Medico. All rights reserved.</p>
         </div>
       </div>
     </div>
