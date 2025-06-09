@@ -1,143 +1,90 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../../assets/images/logo2.png';
-import {RiLinkedinFill} from 'react-icons/ri';
-import { AiFillYoutube, AiFillGithub, AiOutlineInstagram } from 'react-icons/ai';
-
-
-const socialLinks = [
-  {
-    path: "/home",
-    icon:<AiFillYoutube className='group-hover:text-white w-4 h-5' />,
-  },
-  {
-    path: "/home",
-    icon:<AiFillGithub className='group-hover:text-white w-4 h-5' />,
-  },
-  {
-    path: "/home",
-    icon:<AiOutlineInstagram className='group-hover:text-white w-4 h-5' />,
-  },
-  {
-     path: "/home",
-    icon:<RiLinkedinFill className='group-hover:text-white w-4 h-5' />,
-  },
-];
-
-const quickLinks01 = [
-  {
-    path: "/home",
-    display: "Home",
-  },
-  {
-    path: "/",
-    display: "About Us",
-  },
-  {
-    path: "/services",
-    display: "Services",
-  },
-  {
-    path: "/",
-    display: "Blog",
-  },
-];
-
-const quickLinks02 = [
-  {
-    path: "/find-a-doctor",
-    display: "Find a Doctor",
-  },
-  {
-    path: "/",
-    display: "Request an Appointment",
-  },
-  {
-    path: "/",
-    display: "Find a Location",
-  },
-  {
-    path: "/",
-    display: "Get a Opinion",
-  },
-];
-
-const quickLinks03 = [
-  {
-    path: "/",
-    display: "Donate",
-  },
-  {
-    path: "/contact",
-    display: "Contact Us",
-  },
-];
+import React from "react";
+import { Link } from "react-router-dom";
+import { FaGithub, FaEnvelope } from "react-icons/fa";
 
 const Footer = () => {
-  const year = new Date().getFullYear();
-
   return (
-    <footer className='pb-16 pt-10'>
-
-
-      <div className='container'>
-        <div className='flex justify-between flex-col md:flex-row flex-wrap gap-[30px] '>
+    <div className="bg-[#0a192f] text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Company Info */}
           <div>
-            <img src={logo} alt='' className='w-[200px] h-[200px]' />
-            <p className='text-[16px] leading-7 font-[400] text-textColor'>Copyright @ {year} developed by Team All Rights Reserved.
+            <h3 className="text-xl font-bold mb-4">MediEase</h3>
+            <p className="text-gray-400">
+              Your trusted partner in healthcare, connecting patients with
+              qualified doctors and providing comprehensive medical services.
             </p>
-            <div className='flex items-center gap-3 mt-4'>
-              {socialLinks.map((link, index) => <Link to={link.path} key={index} className='w-9 h-9 border border-solid border-[#181A1E] rounded-full flex items-center justify-center group hover:bg-primaryColor hover:border-none'>
-                {link.icon}
-              </Link>)}
-            </div>
           </div>
 
+          {/* Quick Links 01 */}
           <div>
-            <h2 className='text-[20px] leading-[30px] font-[700] mb-6 text-headingColor '>
-               Quick Links
-            </h2>
-
-            <ul>
-              {quickLinks01.map((item,index)=><li key={index} className='mb-4'>
-                <Link to={item.path} className='text-[16px] leading-7 font-[400] text-textColor'>
-                  {item.display}
-              </Link></li>)}
-            </ul>
-          </div>
-           <div>
-            <h2 className='text-[20px] leading-[30px] font-[700] mb-6 text-headingColor '>
-               I want to:
-            </h2>
-
-            <ul>
-              {quickLinks02.map((item,index)=><li key={index} className='mb-4'>
-                <Link to={item.path} className='text-[16px] leading-7 font-[400] text-textColor'>
-                  {item.display}
-              </Link></li>)}
+            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-gray-400 hover:text-white">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/doctors" className="text-gray-400 hover:text-white">
+                  Find a Doctor
+                </Link>
+              </li>
             </ul>
           </div>
 
-           <div>
-            <h2 className='text-[20px] leading-[30px] font-[700] mb-6 text-headingColor '>
-               Support
-            </h2>
-
-            <ul>
-              {quickLinks03.map((item,index)=><li key={index} className='mb-4'>
-                <Link to={item.path} className='text-[16px] leading-7 font-[400] text-textColor'>
-                  {item.display}
-              </Link></li>)}
+          {/* Quick Links 02 */}
+          <div>
+            <h3 className="text-xl font-bold mb-4">Services</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/ambulances" className="text-gray-400 hover:text-white">
+                  Find an Ambulance
+                </Link>
+              </li>
             </ul>
           </div>
 
+          {/* Support */}
+          <div>
+            <h3 className="text-xl font-bold mb-4">Support</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-white">
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
 
+        {/* Social Links */}
+        <div className="mt-8 pt-8 border-t border-gray-700">
+          <div className="flex justify-center space-x-6">
+            <a
+              href="https://github.com/Somzee5/Medico"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white"
+            >
+              <FaGithub className="h-6 w-6" />
+            </a>
+            <a
+              href="mailto:medicohelp2@gmail.com"
+              className="text-gray-400 hover:text-white"
+            >
+              <FaEnvelope className="h-6 w-6" />
+            </a>
+          </div>
+        </div>
 
+        {/* Copyright */}
+        <div className="mt-8 text-center text-gray-400">
+          <p>&copy; {new Date().getFullYear()} MediEase. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-
+    </div>
   );
 };
 
-export default Footer
+export default Footer;
