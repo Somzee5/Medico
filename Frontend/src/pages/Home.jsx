@@ -67,8 +67,7 @@ const Home = () => {
 
               <p className="text-[16px] leading-7 text-textColor font-[400] mt-4 text-center ">
                 World-class care for everyone. Our health system offers
-                unmatched <br />
-                ,expert health care. From the lab to the clinic.
+                unmatched, expert health care. From the lab to the clinic.
               </p>
             </div>
 
@@ -94,9 +93,7 @@ const Home = () => {
               </div>
 
               <p className="text-[16px] leading-7 text-textColor font-[400] mt-4 text-center ">
-                World-class care for everyone. Our health system offers
-                unmatched <br />
-                ,expert health care. From the lab to the clinic.
+                Locate nearby hospitals and book ambulances with real-time routes using integrated Google Maps.
               </p>
             </div>
 
@@ -106,7 +103,7 @@ const Home = () => {
               </div>
 
               <Link
-                to="/doctors"
+                to="/ambulances"
                 className="w-[44px] h-[44px] rounded-full border border-solid border-[#181A1E] mt-[30px] mx-auto flex items-center justify-center group hover:bg-primaryColor hover:border-none"
               >
                 <BsArrowRight className="group-hover:text-white w-6 h-5" />
@@ -121,9 +118,7 @@ const Home = () => {
               </div>
 
               <p className="text-[16px] leading-7 text-textColor font-[400] mt-4 text-center ">
-                World-class care for everyone. Our health system offers
-                unmatched <br />
-                ,expert health care. From the lab to the clinic.
+              Schedule appointments with doctors and join consultations directly via Zoom links—no downloads or extra steps required.
               </p>
             </div>
 
@@ -142,10 +137,8 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* Mera code ends */}
 
-      {/*about section start  */}
-      <About />
+      
 
     {/* services start */}
     <section>
@@ -163,96 +156,28 @@ const Home = () => {
     {/* feature section */}
     <section>
       <div className='container shadow hover:shadow-lg'>
-
         <div className='flex items-center justify-between flex-col lg:flex-row'>
           {/* feature content */}
           <div className='xl:w-[670px]'>
-            <h2 className='font-sans heading'>Get Virtual treatment <br />anytime.
-            </h2>
-            <ul className='pl-4'>
-              <li className="text__para">
-                1. Schedule the appoinment directly.
-              </li>
-              <li className='text__para'>
-                2. Search for your physician here, and contact their office.
-              </li>
-              <li className='text__para'>
-                3. View our physicians who are accepting new patients,use the online scheduling tool to select an appoinment time.
-              </li>
-            </ul>
-            <Link to='/'>
-              <button className='btn'>Learn More</button>
-            </Link>
+            <h2 className='font-sans heading'>Book Appointments Instantly on Zoom</h2>
+            <p className='text__para'>
+              Schedule appointments with doctors and join consultations directly via Zoom links—no downloads or extra steps required.
+            </p>
           </div>
-
-            {/* feature img */}
-            <div className="relative z-10 xl:w-[770px] flex justify-end mt-[50px] lg:mt-0 bg-gray-200">
-              <img src={FEATUREIMG} alt="" className="w-3/4" />
-              <div className="w-[150px] lg:w-[248px] bg-white absolute bottom-[50px] left-0 md:bottom-[100px] md:left-5 z-20 p-2 pb-3 lg:pt-4 lg:px-4 lg:pb-[26px] rounded-[10px]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-[6px] lg:gap-3">
-                    <p className="text-[10px] leading-[10px] lg:text-[14px] lg:leading-5 text-headingColor font-[600]">
-                      Tue,24
-                    </p>
-                    <p className="text-[10px] leading-[10px] lg:text-[14px] lg:leading-5 text-headingColor font-[600]">
-                      10:00AM
-                    </p>
-                  </div>
-                  <span className="w-5 h-5 lg:w-[34px] lg:h-[34px] flex items-center justify-center bg-yellowColor rounded py-1 px-[6px] lg:py-3 lg:px-[9px]">
-                    <img src={videoIcon} />
-                  </span>
-                </div>
-
-                <div className="w-[75px] lg:w-[96px] bg-[#CCF0F3] py-2 px-2 lg:py-[6px] lg:px-[10px] text-[8px] leading-[8px] lg:text-[12px] lg:leading-4 text-irisBlueColor font-[500] mt-2 lg:mt-4 rounded-full ">
-                  Consultation
-                </div>
-
-                <div className="flex items-center gap-[6px] lg:gap-[10px] mt-2 lg:mt-[18px] ">
-                  <img src={avatarIcon} alt="" />
-                  <h4 className="text-[10px] leading-3 lg:text-[16px] lg:leading-[22px] font-[700] text-headingColor ">
-                    Suresh
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* feature section end */}
-
-      {/* faqs */}
-      <section>
-        <div className="container">
-          <div className="flex justify-between gap-[50px] lg:gap-0 ">
-            <div className="w-1/2 hidden md:block flex ">
-              <img
-                src={FAQIMG}
-                className="h-[600px] w-[60%] ml-20 rounded-lg"
-              />
-            </div>
-
-          <div className='w-full md:w-1/2'>
-            <h2 className='font-sans heading'>
-              Most questions by our beloved patients
-            </h2>
-            <FaqList />
+          {/* feature img */}
+          <div className="relative z-10 xl:w-[770px] flex justify-end mt-[50px] lg:mt-0 bg-gray-200">
+            <img src={FEATUREIMG} alt="" className="w-3/4" />
           </div>
         </div>
       </div>
     </section>
-    {/* faqs end */}
+    {/* feature section end */}
 
+    {/* faqs */}
+    {/* Removed FAQ section as per user request */}
+    
     {/* testimonial */}
-    <section>
-      <div className='container shadow-inner'>
-        <div className='xl:w-[470px] mx-auto'>
-          <h2 className='font-sans heading text-center'>What Our Patient Say</h2>
-          <p className='text__para text-center'>World-class care for everyone.Our health System offers unmatched,expert health care.</p>
-        </div>
-        <Testimonial />
-      </div>
-    </section>
-    {/* testimonail ends */}
+    {/* Removed testimonial section as per user request */}
 
 
   </div>
