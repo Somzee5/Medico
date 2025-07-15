@@ -28,7 +28,7 @@ Unlike traditional healthcare portals, Medico brings together telemedicine, emer
 | 🔧 Layer             | ⚙️ Technologies Used |
 |----------------------|-------------------------|
 | 🎨 **Frontend**       | React.js, Tailwind CSS |
-| 🐍 **Backend**        | Django REST Framework |
+| 🐍 **Backend**        | Node, express.js |
 | 🗄️ **Database**        | MongoDB |
 | 🗺️ **Maps & Location** | Google Maps API |
 | 📹 **Video Calls**     | Zoom API Integration |
