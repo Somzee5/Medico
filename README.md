@@ -3,9 +3,9 @@
   <img src="./Frontend/src/assets/images/logo.jpg" alt="Medico Logo" width="300"/>
 </p>
 
-# 🏥 Medico - Seamless Healthcare Services Platform
+# 🏥 Medico - Bridging Healthcare Gaps Digitally
 
-> "Your Health, Our Mission" → One-stop solution for online doctor consultations, ambulance booking, and digital health management.
+> One-stop solution for online doctor consultations, ambulance booking, and digital health management.
 
 > Designed to make healthcare accessible, efficient, and secure for everyone, everywhere.
 
@@ -60,35 +60,104 @@ Unlike traditional healthcare portals, Medico brings together telemedicine, emer
 
 ## 📸 Project Demo
 
-> _Add your screenshots in the sections below!_
+### 1️⃣ Registration (Three Roles)
+<img src="./Frontend/src/assets/readme_images/Registration.jpg" width="700"/>
+<br>>Users can register as Doctor, Patient, or Ambulance Driver, selecting their role at signup.
 
-### 1️⃣ Home Page & Navigation
+---
 
-![Home Page](Images/demo_home.png)
+### 2️⃣ Home Page & Navigation
+<img src="./Frontend/src/assets/readme_images/Home.jpg" width="700"/>
+<br>> The home page features a clear navigation bar for easy access to all platform services.
 
-### 2️⃣ Doctor Search & Appointment Booking
+---
 
-![Doctor Booking](Images/demo_doctor_booking.png)
+### 3️⃣ Find Doctor
+<img src="./Frontend/src/assets/readme_images/Find_doctor.jpg" width="700"/>
+<br>> Search for doctors by specialization or name, making it easy to find the right healthcare professional.
 
-### 3️⃣ Zoom Video Consultation Flow
+---
 
-![Zoom Consultation](Images/demo_zoom.png)
+### 4️⃣ Nearby Doctors
+<img src="./Frontend/src/assets/readme_images/Nearby_doctor.jpg" width="700"/>
+<br>> View only doctors available nearby, helping users connect with local healthcare providers quickly.
 
-### 4️⃣ Ambulance Booking & Live Tracking (Google Maps)
+---
 
-![Ambulance Booking](Images/demo_ambulance.png)
+### 5️⃣ Booking Doctor Appointment
+<img src="./Frontend/src/assets/readme_images/Booking_doctor.jpg" width="700"/>
+<br>> Book appointments with doctors based on their available slots. Doctors set their free slots, visible to patients. Payments are handled via Razorpay (test environment), and appointments are scheduled on Zoom.
 
-### 5️⃣ Nearby Hospital/Clinic Search
+---
 
-![Nearby Search](Images/demo_nearby.png)
+### 6️⃣ Doctor Appointments Overview
+<img src="./Frontend/src/assets/readme_images/Appointments_doctor.jpg" width="700"/>
+<br>> Patients can view their booked appointments with doctors, including direct Zoom join links.
 
-### 6️⃣ Prescription & Report Upload/Storage
+---
 
-![Reports](Images/demo_reports.png)
+### 7️⃣ Email Reminder
+<img src="./Frontend/src/assets/readme_images/Email.jpg" width="700"/>
+<br>> Patients receive an email reminder 5 minutes before their scheduled appointment with the doctor.
 
-### 7️⃣ User Profile & Health Records
+---
 
-![Profile](Images/demo_profile.png)
+### 8️⃣ Doctor Profile & Meeting Management
+<img src="./Frontend/src/assets/readme_images/Profile_doctor.jpg" width="700"/>
+<br>> Doctors can track all their meetings and join upcoming appointments directly from their profile.
+
+---
+
+### 9️⃣ Find Ambulance
+<img src="./Frontend/src/assets/readme_images/Find_ambulance.jpg" width="700"/>
+<br>> Search for ambulances by region or driver name for quick emergency response.
+
+---
+
+### 1️⃣0️⃣ Nearby Ambulances (Google Maps)
+<img src="./Frontend/src/assets/readme_images/Nearby_ambulance.jpg" width="700"/>
+<br>> View nearby ambulances on an interactive Google Map, similar to food delivery apps.
+
+---
+
+### 1️⃣1️⃣ Booking Ambulance
+<img src="./Frontend/src/assets/readme_images/Booking_ambulance.jpg" width="700"/>
+<br>> Book an ambulance when the driver is available. Free slots are shown for each driver.
+
+---
+
+### 1️⃣2️⃣ Ambulance Driver Home & Status Toggle
+<img src="./Frontend/src/assets/readme_images/Home_ambulance.jpg" width="700"/>
+<br>> Ambulance drivers have a dedicated home page with a toggle button to set their status as 'Free' or 'Engaged' during service.
+
+---
+
+### 1️⃣3️⃣ Ambulance Appointments Tracking
+<img src="./Frontend/src/assets/readme_images/Appointments_ambulance.jpg" width="700"/>
+<br>> Track all booked ambulance services and their statuses.
+
+---
+
+### 1️⃣4️⃣ Ambulance Driver Profile
+<img src="./Frontend/src/assets/readme_images/Profile_ambulance.jpg" width="700"/>
+<br>> Ambulance drivers can view and manage their service history from their profile page.
+
+---
+
+### 1️⃣5️⃣ Documents Vault
+<img src="./Frontend/src/assets/readme_images/Documents_vault.jpg" width="700"/>
+<br>> Securely store and manage medical reports and documents in the digital vault.
+
+---
+
+### 1️⃣6️⃣ Prescription Creation & Sending
+<table><tr>
+<td><img src="./Frontend/src/assets/readme_images/Create_prescription.jpg" width="340"/></td>
+<td><img src="./Frontend/src/assets/readme_images/Send_prescription.jpg" width="340"/></td>
+</tr><tr>
+<td colspan="2" align="center">
+>Templates for creating prescriptions with tabular medicine/dose entry, and direct sending to patients via WhatsApp.
+</td></tr></table>
 
 ---
 
