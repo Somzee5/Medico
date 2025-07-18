@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TestChart from './TestChart.jsx';
 import HashLoader from 'react-spinners/HashLoader.js';
+import { FLASK_PRESCRIPTION_API_URL } from '../config.js';
 
 const GenAi = () => {
   const [data, setData] = useState([]);
@@ -9,7 +10,7 @@ const GenAi = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      let response = await fetch("http://127.0.0.1:8080/gen");
+      let response = await fetch(`${FLASK_PRESCRIPTION_API_URL}/gen`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -26,7 +27,7 @@ const GenAi = () => {
   };
 
   const handleReportClick = () => {
-    window.open("http://127.0.0.1:8080/report", "_blank"); // Open in new tab
+    window.open(`${FLASK_PRESCRIPTION_API_URL}/report`, "_blank"); // Open in new tab
   };
 
   return (
