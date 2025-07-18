@@ -1,4 +1,4 @@
-export const NODE_API_URL = 'https://medico-node-backend.onrender.com';
+export const NODE_API_URL = 'https://medico-node-backend.onrender.com/api/v1';
 export const FLASK_PRESCRIPTION_API_URL = 'https://medico-prescriptions-api.onrender.com';
 export const ML_CHATBOT_API_URL = 'https://medico-chatbot-api.onrender.com';
 export const BASE_URL = NODE_API_URL;
