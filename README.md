@@ -152,8 +152,8 @@ Unlike traditional healthcare portals, Medico brings together telemedicine, emer
 
 ### 1️⃣6️⃣ Prescription Creation & Sending
 <table><tr>
-<td><img src="./Frontend/src/assets/readme_images/Create_prescription.jpg" width="340"/></td>
-<td><img src="./Frontend/src/assets/readme_images/Send_prescription.jpg" width="340"/></td>
+<td><img src="./Frontend/src/assets/readme_images/Create_prescription.jpg" width="400"/></td>
+<td><img src="./Frontend/src/assets/readme_images/Send_Prescription.jpg" width="400"/></td>
 </tr><tr>
 <td colspan="2" align="center">
 >Templates for creating prescriptions with tabular medicine/dose entry, and direct sending to patients via WhatsApp.
